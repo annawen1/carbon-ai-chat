@@ -82,12 +82,14 @@ jobs:
       - name: Publish full major release (ie. vx.0.0)
         if: github.event.inputs.type == 'full major release'
         run: |
-          npx lerna publish major --conventional-graduate --ignore @carbon/ai-chat-components ${{ env.PUBLISH }} ${{ env.FORCE }}
+          npx lerna publish major --conventional-graduate --ignore-changes "packages/@carbon/ai-chat-components/**" ${{ env.PUBLISH }} ${{ env.FORCE }}
+          npx lerna publish minor --conventional-graduate --scope "@carbon/ai-chat-components" ${{ env.PUBLISH }} ${{ env.FORCE }}
 
       - name: Publish first major RC (ie. vx.0.0-rc.0)
         if: github.event.inputs.type == 'first major rc'
         run: |
-          npx lerna publish premajor --conventional-prerelease --preid rc --pre-dist-tag next --ignore @carbon/ai-chat-components ${{ env.PUBLISH }} ${{ env.FORCE }}
+          npx lerna publish premajor --conventional-prerelease --preid rc --pre-dist-tag next --ignore-changes "packages/@carbon/ai-chat-components/**" ${{ env.PUBLISH }} ${{ env.FORCE }}
+          npx lerna publish preminor --conventional-prerelease --preid rc --pre-dist-tag next --scope "@carbon/ai-chat-components" ${{ env.PUBLISH }} ${{ env.FORCE }}
 
       - name: Publish full minor release (ie. v1.x.0)
         if: github.event.inputs.type == 'full minor release'
