@@ -6,6 +6,23 @@ name: Check for peer dependency changes
 # `create-release-tag-and-pr` workflow
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        # Recently published version
+        required: true
+        description: "release tag (ie. v1.1.0-rc.0)"
+        type: string
+        default: "v1.1.0-rc.0"
+      previous-tag:
+        # Previous release tag to grab changelogs from
+        # To pick the previous tag:
+        # - If published tag is the first release candidate, choose the previous full release tag.
+        # - If published tag is a subsequent release candidate, choose the previous release candidate.
+        # - If published tag is a full release, choose the previous full release tag.
+        required: true
+        description: "previous release tag (ie. v1.0.0)"
+        type: string
+        default: "v1.0.0"
   repository_dispatch:
     types: [check-peer-dependencies]
 
@@ -21,11 +38,11 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: "0"
-          ref: ${{ github.event.client_payload.branch }}
+          ref: ${{ github.event.client_payload.branch || github.ref_name }}
 
       - name: Get package.json from previous release
         run: |
-          git show ${{ github.event.client_payload.previous-tag }}:packages/ai-chat/package.json > package-old.json
+          git show ${{ github.event.client_payload.previous-tag || github.event.inputs.previous-tag }}:packages/ai-chat/package.json > package-old.json
 
       - name: Get package.json from current release
         run: |
@@ -104,6 +121,6 @@ jobs:
           git config --global user.name ${{ secrets.CARBON_BOT_NAME }}
           git add docs/peer-dependency-changes.md
           git commit -m "chore: update peer dependency changes"
-          git push origin chore/${{ github.event.client_payload.tag }}-release
+          git push origin chore/${{ github.event.client_payload.tag || github.event.inputs.tag }}-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
