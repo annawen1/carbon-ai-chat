@@ -124,8 +124,9 @@ jobs:
         run: |
           git config --global user.email "54281166+annawen1@users.noreply.github.com"
           git config --global user.name "Anna Wen"
+          git checkout -b chore/${{ github.event.inputs.tag }}-release
           git add docs/peer-dependency-changes.md
           git commit -m "chore: update peer dependency changes"
-          git push -u origin chore/${{ github.event.client_payload.tag || github.event.inputs.tag }}-release
+          git push origin chore/${{ github.event.inputs.tag }}-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
