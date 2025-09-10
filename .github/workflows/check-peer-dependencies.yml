@@ -122,6 +122,8 @@ jobs:
       - name: Commit updated peer-dependency-changes.md
         if: steps.diff.outputs.has_changes == 'true'
         run: |
+          git config --global user.email "54281166+annawen1@users.noreply.github.com"
+          git config --global user.name "Anna Wen"
           git add docs/peer-dependency-changes.md
           git commit -m "chore: update peer dependency changes"
           git push origin chore/${{ github.event.client_payload.tag || github.event.inputs.tag }}-release
