@@ -48,7 +48,7 @@ jobs:
         run: |
           cp packages/ai-chat/package.json package-new.json
 
-      - name: Compare peerDependencies and prepend to release notes
+       - name: Compare peerDependencies and prepend to release notes
         id: diff
         run: |
           node <<'EOF'
@@ -83,10 +83,11 @@ jobs:
 
           let hasChanges = false;
           let content = fs.readFileSync(path, 'utf8');
+          let newSection = "";
 
           if (added.length > 0 || removed.length > 0 || updated.length > 0) {
             hasChanges = true;
-            let newSection = `\n\n---\n\n# Version ${version}\n`;
+            newSection = `\n\n---\n\n# Version ${version}\n`;
 
             if (added.length > 0) {
               newSection += "\n**Added**\n" + added.join("\n");
@@ -97,6 +98,9 @@ jobs:
             if (updated.length > 0) {
               newSection += "\n**Updated**\n" + updated.join("\n");
             }
+
+            // Log new section
+            console.log("Changes detected, appending:\n", newSection);
 
             // Prepend new changes below description
             const firstLineBreak = content.indexOf('\n\n');
@@ -112,14 +116,12 @@ jobs:
           }
 
           console.log(hasChanges ? "changes" : "no-changes");
-          require('fs').appendFileSync(process.env.GITHUB_OUTPUT, `has_changes=${hasChanges}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `has_changes=${hasChanges}\n`);
           EOF
 
       - name: Commit updated peer-dependency-changes.md
         if: steps.diff.outputs.has_changes == 'true'
         run: |
-          git config --global user.email anna.wen@ibm.com
-          git config --global user.name Anna Wen
           git add docs/peer-dependency-changes.md
           git commit -m "chore: update peer dependency changes"
           git push origin chore/${{ github.event.client_payload.tag || github.event.inputs.tag }}-release
