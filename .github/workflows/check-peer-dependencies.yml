@@ -112,13 +112,14 @@ jobs:
           }
 
           console.log(hasChanges ? "changes" : "no-changes");
+          require('fs').appendFileSync(process.env.GITHUB_OUTPUT, `has_changes=${hasChanges}\n`);
           EOF
 
       - name: Commit updated peer-dependency-changes.md
-        if: steps.diff.outputs == 'changes'
+        if: steps.diff.outputs.has_changes == 'true'
         run: |
-          git config --global user.email ${{ secrets.CARBON_BOT_EMAIL }}
-          git config --global user.name ${{ secrets.CARBON_BOT_NAME }}
+          git config --global user.email anna.wen@ibm.com
+          git config --global user.name Anna Wen
           git add docs/peer-dependency-changes.md
           git commit -m "chore: update peer dependency changes"
           git push origin chore/${{ github.event.client_payload.tag || github.event.inputs.tag }}-release
