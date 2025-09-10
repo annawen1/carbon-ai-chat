@@ -48,7 +48,7 @@ jobs:
         run: |
           cp packages/ai-chat/package.json package-new.json
 
-       - name: Compare peerDependencies and prepend to release notes
+      - name: Compare peerDependencies and prepend to release notes
         id: diff
         run: |
           node <<'EOF'
