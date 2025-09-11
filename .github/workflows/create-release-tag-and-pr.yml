@@ -151,14 +151,14 @@ jobs:
 
   # # This job dispatches workflow to publish staging / latest CDN artifacts
   # dispatch-cdn-workflow:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: create-release-tag
-    steps:
-      # After successfully creating tag for the release candidate / full release, trigger the workflow to publish the CDN artifacts.
-      # Pass in the tag to the CDN publishing workflow.
-      - name: Dispatch CDN publishing workflow
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          event-type: publish-cdn-artifacts
-          client-payload: '{"tag": "${{ github.event.inputs.tag }}", "branch": "${{ github.ref_name }}"}'
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
+  #   needs: create-release-tag
+  #   steps:
+  #     # After successfully creating tag for the release candidate / full release, trigger the workflow to publish the CDN artifacts.
+  #     # Pass in the tag to the CDN publishing workflow.
+  #     - name: Dispatch CDN publishing workflow
+  #       uses: peter-evans/repository-dispatch@v3
+  #       with:
+  #         event-type: publish-cdn-artifacts
+  #         client-payload: '{"tag": "${{ github.event.inputs.tag }}", "branch": "${{ github.ref_name }}"}'
