@@ -90,17 +90,16 @@ jobs:
             newSection = `\n\n---\n\n# Version ${version}\n`;
 
             if (added.length > 0) {
-              newSection += "\n**Added**\n" + added.join("\n");
+              newSection += "\n**Added**\n\n" + added.join("\n") + "\n";
             }
             if (removed.length > 0) {
-              newSection += "\n**Removed**\n" + removed.join("\n");
+              newSection += "\n**Removed**\n\n" + removed.join("\n") + "\n";
             }
             if (updated.length > 0) {
-              newSection += "\n**Updated**\n" + updated.join("\n");
+              newSection += "\n**Updated**\n\n" + updated.join("\n") + "\n";
             }
 
-            // Log the new section
-            console.log("Changes detected, appending:\n", newSection);
+            console.log("New section being added:\n", newSection);
 
             // Insert after description block (before first --- or # Version)
             let insertIndex = content.search(/\n---|\n# Version/);
