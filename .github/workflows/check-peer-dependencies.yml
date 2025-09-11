@@ -124,9 +124,20 @@ jobs:
         run: |
           git config --global user.email "54281166+annawen1@users.noreply.github.com"
           git config --global user.name "Anna Wen"
-          git checkout -b chore/${{ github.event.inputs.tag }}-release
+
+          BRANCH="chore/${{ github.event.client_payload.tag || github.event.inputs.tag }}-release"
+          git fetch origin $BRANCH || true
+
+          if git rev-parse --verify origin/$BRANCH >/dev/null 2>&1; then
+            echo "Branch $BRANCH exists, checking it out"
+            git checkout -b $BRANCH origin/$BRANCH
+          else
+            echo "Branch $BRANCH does not exist, creating it"
+            git checkout -b $BRANCH
+          fi
+
           git add docs/peer-dependency-changes.md
           git commit -m "chore: update peer dependency changes"
-          git push origin chore/${{ github.event.inputs.tag }}-release
+          git push origin $BRANCH
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

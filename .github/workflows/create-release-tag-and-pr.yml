@@ -80,77 +80,77 @@ jobs:
 
   # This job dispatches workflow to check if there is a change in peerDependencies and updates
   # the peer-dependency-changes.md file
-  # check-change-in-peer-dependencies:
+  check-change-in-peer-dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: create-release-tag
+    steps:
+      # Triggers only if it is a full release
+      - name: Check for peer dependency changes
+        if: contains(github.event.inputs.tag, '-rc.') == false
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: check-peer-dependencies
+          client-payload: '{"branch": "${{ github.ref_name }}", "previous-tag": "${{ github.event.inputs.previous-tag }}", "tag": "${{ github.event.inputs.tag }}"}'
+
+  # This job creates the release with the git tag pushed from job above with the corresponding
+  # release notes from the previous version to current
+  # create-release:
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 60
   #   needs: create-release-tag
   #   steps:
-  #     # Triggers only if it is a full release
-  #     - name: Check for peer dependency changes
+  #     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  #       with:
+  #         fetch-depth: "0"
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v5
+  #       with:
+  #         node-version: "22.x"
+  #         registry-url: https://registry.npmjs.org
+  #         cache: "npm"
+  #     - name: Install dependencies
+  #       run: npm install
+
+  #     # Generate the changelog with the local 'get-changelog.js' script and output to 'changelog.txt' file
+  #     - name: Run changelog script
+  #       id: run-changelog
+  #       run: |
+  #         node ./scripts/get-changelog.js -f ${{ github.event.inputs.previous-tag }} -t ${{ github.event.inputs.tag }} >> changelog.txt
+
+  #     # Creates the release with the generated changelog
+  #     - uses: ncipollo/release-action@v1
+  #       with:
+  #         tag: "${{ github.event.inputs.tag }}"
+  #         name: "${{ github.event.inputs.tag }}"
+  #         prerelease: true
+  #         bodyFile: "./changelog.txt"
+
+  # # This job dispatches workflow to push to staging / latest environments
+  # dispatch-storybook-workflow:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
+  #   needs: create-release-tag
+  #   steps:
+  #     # After successfully creating tag for release candidate, trigger the staging storybook environment deployment workflow.
+  #     # Pass in the release branch name to the storybook deployment job so it build off the release branch
+  #     - name: Dispatch staging storybook deployment workflow
+  #       uses: peter-evans/repository-dispatch@v3
+  #       with:
+  #         event-type: deploy-staging-storybook
+  #         client-payload: '{"branch": "${{ github.ref_name }}"}'
+
+  #     # After successfully creating a tag for full release, trigger the production storybook environment deployment workflow.
+  #     # Pass in the release branch name to the storybook deployment job so it build off the release branch
+  #     - name: Dispatch production storybook deployment workflow
   #       if: contains(github.event.inputs.tag, '-rc.') == false
   #       uses: peter-evans/repository-dispatch@v3
   #       with:
-  #         event-type: check-peer-dependencies
-  #         client-payload: '{"branch": "${{ github.ref_name }}", "previous-tag": "${{ github.event.inputs.previous-tag }}", "tag": "${{ github.event.inputs.tag }}"}'
+  #         event-type: deploy-latest-storybook
+  #         client-payload: '{"branch": "${{ github.ref_name }}"}'
 
-  # This job creates the release with the git tag pushed from job above with the corresponding
-  # release notes from the previous version to current
-  create-release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: create-release-tag
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          fetch-depth: "0"
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: "22.x"
-          registry-url: https://registry.npmjs.org
-          cache: "npm"
-      - name: Install dependencies
-        run: npm install
-
-      # Generate the changelog with the local 'get-changelog.js' script and output to 'changelog.txt' file
-      - name: Run changelog script
-        id: run-changelog
-        run: |
-          node ./scripts/get-changelog.js -f ${{ github.event.inputs.previous-tag }} -t ${{ github.event.inputs.tag }} >> changelog.txt
-
-      # Creates the release with the generated changelog
-      - uses: ncipollo/release-action@v1
-        with:
-          tag: "${{ github.event.inputs.tag }}"
-          name: "${{ github.event.inputs.tag }}"
-          prerelease: true
-          bodyFile: "./changelog.txt"
-
-  # This job dispatches workflow to push to staging / latest environments
-  dispatch-storybook-workflow:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: create-release-tag
-    steps:
-      # After successfully creating tag for release candidate, trigger the staging storybook environment deployment workflow.
-      # Pass in the release branch name to the storybook deployment job so it build off the release branch
-      - name: Dispatch staging storybook deployment workflow
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          event-type: deploy-staging-storybook
-          client-payload: '{"branch": "${{ github.ref_name }}"}'
-
-      # After successfully creating a tag for full release, trigger the production storybook environment deployment workflow.
-      # Pass in the release branch name to the storybook deployment job so it build off the release branch
-      - name: Dispatch production storybook deployment workflow
-        if: contains(github.event.inputs.tag, '-rc.') == false
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          event-type: deploy-latest-storybook
-          client-payload: '{"branch": "${{ github.ref_name }}"}'
-
-  # This job dispatches workflow to publish staging / latest CDN artifacts
-  dispatch-cdn-workflow:
+  # # This job dispatches workflow to publish staging / latest CDN artifacts
+  # dispatch-cdn-workflow:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: create-release-tag
