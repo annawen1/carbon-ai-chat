@@ -111,9 +111,10 @@ jobs:
             }
 
             const before = content.slice(0, insertIndex).trimEnd();
-            const after = content.slice(insertIndex);
+            const after = content.slice(insertIndex).trimStart();
 
-            content = before + "\n\n" + newSection + after;
+            // Ensure spacing between sections
+            content = before + "\n\n" + newSection.trimEnd() + "\n\n" + after;
 
             fs.writeFileSync(path, content, 'utf8');
           }
