@@ -99,18 +99,19 @@ jobs:
               newSection += "\n**Updated**\n" + updated.join("\n");
             }
 
-            // Log new section
+            // Log the new section
             console.log("Changes detected, appending:\n", newSection);
 
-            // Prepend new changes below description
-            const firstLineBreak = content.indexOf('\n\n');
-            if (firstLineBreak >= 0) {
-              const description = content.slice(0, firstLineBreak + 2);
-              const oldContent = content.slice(firstLineBreak + 2);
-              content = description + newSection + oldContent;
-            } else {
-              content = newSection + content;
+            // Insert after description block (before first --- or # Version)
+            let insertIndex = content.search(/\n---|\n# Version/);
+            if (insertIndex === -1) {
+              insertIndex = content.length;
             }
+
+            const description = content.slice(0, insertIndex).trimEnd();
+            const oldContent = content.slice(insertIndex);
+
+            content = description + "\n\n" + newSection + oldContent;
 
             fs.writeFileSync(path, content, 'utf8');
           }
