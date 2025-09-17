@@ -162,6 +162,11 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
    */
   private previousScrollOffsetHeight: number;
 
+  /**
+   * This is the previous value of the scroll top of the scrollable element when the last scroll event was fired.
+   */
+  private previousLastMessageScrollTop: number;
+
   componentDidMount(): void {
     this.scrollPanelObserver = new ResizeObserver(this.onResize);
     this.scrollPanelObserver.observe(
@@ -196,6 +201,7 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
       // If the last message has changed, then do an auto scroll.
       const lastItemChanged = newLastItem !== oldLastItem;
       if (lastItemChanged || typingChanged) {
+        console.log("doAutoScroll");
         this.doAutoScroll();
       }
     }
@@ -209,8 +215,9 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
   }
 
   /**
-   * Determines if the message should be scrolled to. By default, response messages should be scrolled to,
-   * and request messages should not be scrolled to.
+   * Determines if the message should be scrolled to. The last user message should be scrolled to by default.
+   * However, the last bot message should be scrolled to if there is no user message that can be scrolled to.
+   *
    * Special cases:
    * 1. If a response has history.silent=true, it should not be scrolled to
    * 2. If a message is from history, we should always scroll to it if possible
@@ -238,8 +245,6 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
       if (message?.history?.silent) {
         return false;
       }
-      // For regular response messages, return true
-      return true;
     }
 
     return false;
@@ -410,18 +415,54 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
           messageIndex--;
         }
 
+        // if (lastScrollableMessageComponent) {
+
+        //   console.log('lastScrollableMessageComponent', lastScrollableMessageComponent);
+        //   // Scroll to the top of the message.
+        //   const offsetTop =
+        //     lastScrollableMessageComponent.ref.current?.offsetTop;
+        //   setScrollTop = offsetTop;
+
+        //   console.log('offsetTop', offsetTop);
+        //   debugAutoScroll(
+        //     `[doAutoScroll] Scrolling to message offsetTop=${offsetTop}`,
+        //   );
+        // } else {
+        //   // No message found.
+        //   setScrollTop = -1;
+        //   debugAutoScroll("[doAutoScroll] No message found");
+        // }
+
         if (lastScrollableMessageComponent) {
-          // Scroll to the top of the message.
-          const offsetTop =
-            lastScrollableMessageComponent.ref.current?.offsetTop;
-          setScrollTop = offsetTop + AUTO_SCROLL_EXTRA;
+          const el = lastScrollableMessageComponent.ref.current;
+          const container = this.messagesContainerWithScrollingRef.current;
+          const messageTop = el.offsetTop;
+          const containerHeight = container.clientHeight;
+
+          if (this.previousLastMessageScrollTop === messageTop) {
+            return;
+          }
+
+          this.previousLastMessageScrollTop = messageTop;
+
+          // Desired scrollTop: message top aligns with top of container
+          setScrollTop = messageTop - AUTO_SCROLL_EXTRA;
+
+          // Check if the container can scroll enough
+          const maxScrollTop = container.scrollHeight - containerHeight;
+
+          if (setScrollTop > maxScrollTop) {
+            // Add extra padding at the bottom to allow scrolling this message to the top
+            const extraSpace = setScrollTop - maxScrollTop;
+            container.style.paddingBottom = `${extraSpace}px`;
+
+            // Recompute maxScrollTop after adding padding
+            setScrollTop = messageTop;
+          }
+
           debugAutoScroll(
-            `[doAutoScroll] Scrolling to message offsetTop=${offsetTop}`,
+            `[doAutoScroll] Scrolling message to top offsetTop=${setScrollTop}`,
           );
-        } else {
-          // No message found.
-          setScrollTop = -1;
-          debugAutoScroll("[doAutoScroll] No message found");
         }
       }
 
@@ -435,7 +476,7 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
             scrollElement,
             setScrollTop,
           );
-          doScrollElement(scrollElement, setScrollTop, 0);
+          doScrollElement(scrollElement, setScrollTop, 0, animate);
 
           // Update the scroll anchor setting based on this new position.
           this.checkScrollAnchor(true, setScrollTop);
