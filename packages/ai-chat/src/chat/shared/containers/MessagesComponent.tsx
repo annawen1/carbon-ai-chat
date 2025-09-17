@@ -445,14 +445,14 @@ class MessagesComponent extends PureComponent<MessagesProps, MessagesState> {
 
           this.previousLastMessageScrollTop = messageTop;
 
-          // Desired scrollTop: message top aligns with top of container
+          // message top should align with top of container
           setScrollTop = messageTop - AUTO_SCROLL_EXTRA;
 
           // Check if the container can scroll enough
           const maxScrollTop = container.scrollHeight - containerHeight;
 
           if (setScrollTop > maxScrollTop) {
-            // Add extra padding at the bottom to allow scrolling this message to the top
+            // Add extra padding at the bottom to allow scrolling last message to the top
             const extraSpace = setScrollTop - maxScrollTop;
             container.style.paddingBottom = `${extraSpace}px`;
 
