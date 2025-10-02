@@ -34,15 +34,10 @@ jobs:
         run: |
           node - <<'EOF'
           const fs = require('fs');
-          const path = require('path');
-
-          // Read current version from packages/ai-chat/package.json
-          const pkg = require(path.join(__dirname, 'packages/ai-chat/package.json'));
+          const pkg = require('./packages/ai-chat/package.json');
           const version = pkg.version;
-          const versionWithPrefix = "v" + version;
 
-          // Read versions.js
-          const file = path.join(__dirname, 'versions.js');
+          const file = 'versions.js';
           let content = fs.readFileSync(file, 'utf8');
 
           const regex = /export const AI_CHAT_VERSIONS\s*=\s*(\[[^\]]*\]);/;
@@ -53,8 +48,9 @@ jobs:
           }
 
           let arr = eval(match[1]); // parse the JS array
+          const versionWithPrefix = "v" + version;
           if (!arr.includes(versionWithPrefix)) {
-            arr.unshift(versionWithPrefix); // insert at start
+            arr.unshift(versionWithPrefix); // prepend with "v"
           }
 
           const newArrayStr = JSON.stringify(arr);
