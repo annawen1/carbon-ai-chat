@@ -34,14 +34,18 @@ jobs:
         run: |
           node - <<'EOF'
           const fs = require('fs');
-          const pkg = require('./packages/ai-chat/package.json');
-          const version = pkg.version;
+          const path = require('path');
 
-          const file = 'versions.js';
+          // Read current version from packages/ai-chat/package.json
+          const pkg = require(path.join(__dirname, 'packages/ai-chat/package.json'));
+          const version = pkg.version;
+          const versionWithPrefix = "v" + version;
+
+          // Read versions.js
+          const file = path.join(__dirname, 'versions.js');
           let content = fs.readFileSync(file, 'utf8');
 
-          // Find the array inside AI_CHAT_VERSIONS
-          const regex = /export const AI_CHAT_VERSIONS\s*=\s*(\[[^\]]*\])/;
+          const regex = /export const AI_CHAT_VERSIONS\s*=\s*(\[[^\]]*\]);/;
           const match = content.match(regex);
           if (!match) {
             console.error("Could not find AI_CHAT_VERSIONS array in versions.js");
@@ -49,9 +53,8 @@ jobs:
           }
 
           let arr = eval(match[1]); // parse the JS array
-          const versionWithPrefix = "v" + version;
           if (!arr.includes(versionWithPrefix)) {
-            arr.unshift(versionWithPrefix); // prepend with "v"
+            arr.unshift(versionWithPrefix); // insert at start
           }
 
           const newArrayStr = JSON.stringify(arr);
