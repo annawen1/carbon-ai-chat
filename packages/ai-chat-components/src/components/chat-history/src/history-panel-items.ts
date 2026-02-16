@@ -20,8 +20,8 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-panel-items`)
-export class CDSHistoryPanelItems extends CDSSideNavItems {
+export class CDSAIChatHistoryPanelItems extends CDSSideNavItems {
   static styles = styles;
 }
 
-export default CDSHistoryPanelItems;
+export default CDSAIChatHistoryPanelItems;

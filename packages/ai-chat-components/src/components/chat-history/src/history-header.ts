@@ -25,7 +25,7 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-header`)
-export class CDSHistoryHeader extends LitElement {
+export class CDSAIChatHistoryHeader extends LitElement {
   /**
    * Sets default slot value to header
    */
@@ -81,4 +81,4 @@ export class CDSHistoryHeader extends LitElement {
   static styles = styles;
 }
 
-export default CDSHistoryHeader;
+export default CDSAIChatHistoryHeader;

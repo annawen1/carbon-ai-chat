@@ -42,7 +42,7 @@ type TooltipAlignment =
  *   The custom event fired after an input is saved.
  */
 @carbonElement(`${prefix}-history-panel-item-input`)
-export class CDSHistoryPanelItemInput extends HostListenerMixin(
+export class CDSAIChatHistoryPanelItemInput extends HostListenerMixin(
   FocusMixin(LitElement),
 ) {
   /**
@@ -248,4 +248,4 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
   static styles = styles;
 }
 
-export default CDSHistoryPanelItemInput;
+export default CDSAIChatHistoryPanelItemInput;

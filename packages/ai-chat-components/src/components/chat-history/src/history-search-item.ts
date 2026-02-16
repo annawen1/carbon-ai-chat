@@ -22,7 +22,7 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-search-item`)
-export class CDSHistorySearchItem extends FocusMixin(LitElement) {
+export class CDSAIChatHistorySearchItem extends FocusMixin(LitElement) {
   /**
    * Chat item title.
    */
@@ -53,4 +53,4 @@ export class CDSHistorySearchItem extends FocusMixin(LitElement) {
   static styles = styles;
 }
 
-export default CDSHistorySearchItem;
+export default CDSAIChatHistorySearchItem;

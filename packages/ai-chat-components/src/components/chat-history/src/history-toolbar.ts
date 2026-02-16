@@ -25,7 +25,7 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-toolbar`)
-export class CDSHistoryToolbar extends LitElement {
+export class CDSAIChatHistoryToolbar extends LitElement {
   /**
    * Sets default slot value to toolbar
    */
@@ -56,4 +56,4 @@ export class CDSHistoryToolbar extends LitElement {
   static styles = styles;
 }
 
-export default CDSHistoryToolbar;
+export default CDSAIChatHistoryToolbar;
