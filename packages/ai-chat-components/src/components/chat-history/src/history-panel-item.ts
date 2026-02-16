@@ -47,6 +47,11 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
   selected = false;
 
   /**
+   * id of element
+   */
+  @property({ type: String })
+  id;
+  /**
    * Chat history item title.
    */
   @property({ reflect: true })
@@ -75,7 +80,7 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
   /**
    * Handle menu item clicks
    */
-  private _handleMenuItemClick = (event: Event) => {
+  _handleMenuItemClick = (event: Event) => {
     const target = event.currentTarget as HTMLElement;
     const menuItemText =
       target.getAttribute("data-action-text") || target.textContent?.trim();
@@ -86,12 +91,23 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
       composed: true,
       detail: {
         action: menuItemText,
-        itemId: this.getAttribute("data-item-id"),
+        itemId: this.id,
         itemTitle: this.title,
         element: this,
       },
     });
     this.dispatchEvent(itemActionEvent);
+  };
+
+  /**
+   * Handler for menu item keydown event
+   *
+   * * @param event The event.
+   */
+  _handleMenuItemKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      this._handleMenuItemClick(event);
+    }
   };
 
   updated() {
@@ -115,7 +131,15 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
   }
 
   render() {
-    const { selected, title, actions, rename } = this;
+    const {
+      id,
+      selected,
+      title,
+      actions,
+      rename,
+      _handleMenuItemClick: handleMenuItemClick,
+      _handleMenuItemKeyDown: handleMenuItemKeyDown,
+    } = this;
     const classes = classMap({
       [`cds--side-nav__link`]: true,
       [`cds--side-nav__link--current`]: selected,
@@ -141,7 +165,8 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
                       html`<cds-overflow-menu-item
                         ?danger=${action.delete}
                         ?divider=${action.divider}
-                        @click=${this._handleMenuItemClick}
+                        @click=${handleMenuItemClick}
+                        @keydown=${handleMenuItemKeyDown}
                         >${action.text}${action.icon}</cds-overflow-menu-item
                       >`,
                   )}
@@ -152,6 +177,7 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
         : html`
             <cds-aichat-history-panel-item-input
               value="${title}"
+              item-id="${id}"
             ></cds-aichat-history-panel-item-input>
           `}
     `;

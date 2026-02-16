@@ -241,6 +241,13 @@
   }
 }
 
+:host(#{$prefix}-history-search-item[disabled])
+  button.#{$cds-prefix}--side-nav__link {
+  background-color: transparent;
+  cursor: default;
+  outline: none;
+}
+
 #{$cds-prefix}-overflow-menu {
   visibility: hidden;
 }

@@ -92,9 +92,6 @@ class ChatHistoryDemo extends LitElement {
     this.searchResults = results;
     this.searchTotalCount = results.length;
     this.searchValue = searchValue;
-
-    console.log("Search results:", results);
-    console.log("Total results:", results.length);
   };
 
   render() {
@@ -124,7 +121,7 @@ class ChatHistoryDemo extends LitElement {
                       ${iconLoader(Search16, {
                         slot: "title-icon",
                       })}
-                      <cds-aichat-history-search-item>
+                      <cds-aichat-history-search-item disabled>
                         No available chats
                       </cds-aichat-history-search-item>
                     </cds-aichat-history-panel-menu>
@@ -160,7 +157,7 @@ class ChatHistoryDemo extends LitElement {
                       ${pinnedHistoryItems.map(
                         (item) => html`
                           <cds-aichat-history-panel-item
-                            data-item-id="${item.id}"
+                            id="${item.id}"
                             title="${item.title}"
                             ?selected=${item.selected}
                             ?rename=${item.rename}
@@ -179,7 +176,7 @@ class ChatHistoryDemo extends LitElement {
                           ${item.chats.map(
                             (chat) => html`
                               <cds-aichat-history-panel-item
-                                data-item-id="${chat.id}"
+                                id="${chat.id}"
                                 title="${chat.title}"
                                 .actions=${historyItemActions}
                               ></cds-aichat-history-panel-item>

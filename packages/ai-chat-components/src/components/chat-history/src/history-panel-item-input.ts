@@ -81,6 +81,12 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
   @property()
   placeholder?: string;
 
+  /**
+   * id from the parent history panel item
+   */
+  @property({ type: String, attribute: "item-id" })
+  itemId;
+
   @query("input") input!: HTMLInputElement;
 
   /**
@@ -135,6 +141,7 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
       composed: true,
       detail: {
         newTitle: this.value,
+        itemId: this.itemId,
       },
     };
     const inputSaveEvent = new CustomEvent(
