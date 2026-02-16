@@ -9,7 +9,6 @@
 
 import { LitElement, html } from "lit";
 import { property, query } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
 import prefix from "../../../globals/settings.js";
 
 import { carbonElement } from "../../../globals/decorators/carbon-element.js";
@@ -44,7 +43,7 @@ type TooltipAlignment =
  */
 @carbonElement(`${prefix}-history-panel-item-input`)
 export class CDSHistoryPanelItemInput extends HostListenerMixin(
-  FocusMixin(LitElement)
+  FocusMixin(LitElement),
 ) {
   /**
    * Label for cancel button
@@ -121,7 +120,7 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
     };
     const inputCancelEvent = new CustomEvent(
       `${prefix}-history-panel-item-input-cancel`,
-      init
+      init,
     );
     this.dispatchEvent(inputCancelEvent);
   }
@@ -140,7 +139,7 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
     };
     const inputSaveEvent = new CustomEvent(
       `${prefix}-history-panel-item-input-save`,
-      init
+      init,
     );
     this.dispatchEvent(inputSaveEvent);
   }
@@ -219,12 +218,8 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
       _handleCancel: handleCancel,
       _handleKeydown: handleKeydown,
     } = this;
-    const classes = classMap({
-      [`${prefix}--history-panel-item--rename`]: true,
-    });
 
     return html`
-      <div class="${classes}">
         <div class="${prefix}--history-panel-item--rename__input">
           <input type="text" placeholder="${placeholder}" value="${value}" @input="${handleInput}"  @keydown=${handleKeydown} aria-label="${labelText}"></input>
           <div class="${prefix}--history-panel-item--rename__actions">
@@ -241,8 +236,7 @@ export class CDSHistoryPanelItemInput extends HostListenerMixin(
               <span slot="tooltip-content">${saveLabel}</span>
             </cds-icon-button>
           </div>
-        </div>
-      </div>`;
+        </div>`;
   }
   static styles = styles;
 }

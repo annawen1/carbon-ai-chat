@@ -49,7 +49,7 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
   /**
    * Chat history item title.
    */
-  @property()
+  @property({ reflect: true })
   title!: string;
 
   /**
@@ -100,7 +100,7 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
         `${prefix}-history-panel-item-input-cancel`,
         () => {
           this.rename = false;
-        }
+        },
       );
 
       this.input.addEventListener(
@@ -109,7 +109,7 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
           const newTitle = (event as CustomEvent).detail.newTitle;
           this.title = newTitle;
           this.rename = false;
-        }
+        },
       );
     }
   }
@@ -143,7 +143,7 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
                         ?divider=${action.divider}
                         @click=${this._handleMenuItemClick}
                         >${action.text}${action.icon}</cds-overflow-menu-item
-                      >`
+                      >`,
                   )}
                 </cds-overflow-menu-body>
               </cds-overflow-menu>
@@ -151,7 +151,8 @@ export class CDSHistoryPanelItem extends FocusMixin(LitElement) {
           </button>`
         : html`
             <cds-aichat-history-panel-item-input
-              value="${title}"></cds-aichat-history-panel-item-input>
+              value="${title}"
+            ></cds-aichat-history-panel-item-input>
           `}
     `;
   }

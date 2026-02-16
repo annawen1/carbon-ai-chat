@@ -7,7 +7,7 @@
  *  @license
  */
 import "../index";
-import { html } from "lit";
+import { LitElement, html, css } from "lit";
 import styles from "./story-styles.scss?lit";
 
 import {
@@ -21,6 +21,188 @@ import PinFilled16 from "@carbon/icons/es/pin--filled/16.js";
 import Search16 from "@carbon/icons/es/search/16.js";
 import { iconLoader } from "@carbon/web-components/es/globals/internal/icon-loader.js";
 
+class ChatHistoryDemo extends LitElement {
+  static properties = {
+    headerTitle: { type: String, attribute: "header-title" },
+    searchResults: { type: Array },
+    searchTotalCount: { type: Number },
+    searchValue: { type: String },
+  };
+
+  static styles = css`
+    :host {
+      display: block;
+      block-size: 100%;
+    }
+  `;
+
+  constructor() {
+    super();
+    this.headerTitle = "Conversations";
+    this.searchResults = [];
+    this.searchTotalCount = 0;
+    this.searchValue = "";
+  }
+
+  firstUpdated() {
+    // Add event listeners after first render
+    this.addEventListener("history-item-action", this._handleHistoryItemAction);
+    this.addEventListener("cds-search-input", this._handleSearchInput);
+  }
+
+  _handleHistoryItemAction = (event) => {
+    // Handle rename action
+    if (event.detail.action === "Rename") {
+      const element = event.detail.element;
+      if (element) {
+        element.rename = true;
+      }
+    }
+  };
+
+  _handleSearchInput = (event) => {
+    const searchValue = event.detail.value.toLowerCase();
+
+    // Combine all results into a single array
+    const results = [];
+
+    // Add matching pinned items
+    pinnedHistoryItems.forEach((item) => {
+      if (item.title.toLowerCase().includes(searchValue)) {
+        results.push({
+          ...item,
+          isPinned: true,
+        });
+      }
+    });
+
+    // Add matching history items
+    historyItems.forEach((section) => {
+      section.chats.forEach((chat) => {
+        if (chat.title.toLowerCase().includes(searchValue)) {
+          results.push({
+            ...chat,
+            section: section.section,
+            isPinned: false,
+          });
+        }
+      });
+    });
+
+    this.searchResults = results;
+    this.searchTotalCount = results.length;
+    this.searchValue = searchValue;
+
+    console.log("Search results:", results);
+    console.log("Total results:", results.length);
+  };
+
+  render() {
+    const showSearchResults = this.searchTotalCount > 0 && this.searchValue;
+    const noSearchResults = this.searchTotalCount === 0 && this.searchValue;
+
+    return html`
+      <cds-aichat-history-shell>
+        <cds-aichat-history-header
+          title="${this.headerTitle}"
+        ></cds-aichat-history-header>
+        <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+        <cds-aichat-history-content>
+          ${showSearchResults || noSearchResults
+            ? html`<div slot="results-count">
+                Results: ${this.searchTotalCount}
+              </div>`
+            : ""}
+          <cds-aichat-history-panel aria-label="Chat history">
+            <cds-aichat-history-panel-items>
+              ${noSearchResults
+                ? html`
+                    <cds-aichat-history-panel-menu
+                      expanded
+                      title="Search results"
+                    >
+                      ${iconLoader(Search16, {
+                        slot: "title-icon",
+                      })}
+                      <cds-aichat-history-search-item>
+                        No available chats
+                      </cds-aichat-history-search-item>
+                    </cds-aichat-history-panel-menu>
+                  `
+                : ""}
+              ${showSearchResults
+                ? html`
+                    <cds-aichat-history-panel-menu
+                      expanded
+                      title="Search results"
+                    >
+                      ${iconLoader(Search16, {
+                        slot: "title-icon",
+                      })}
+                      ${this.searchResults.map(
+                        (result) => html`
+                          <cds-aichat-history-search-item
+                            date="${result.lastUpdated}"
+                          >
+                            ${result.title}
+                          </cds-aichat-history-search-item>
+                        `,
+                      )}
+                    </cds-aichat-history-panel-menu>
+                  `
+                : ""}
+              ${!showSearchResults && !noSearchResults
+                ? html`
+                    <cds-aichat-history-panel-menu expanded title="Pinned">
+                      ${iconLoader(PinFilled16, {
+                        slot: "title-icon",
+                      })}
+                      ${pinnedHistoryItems.map(
+                        (item) => html`
+                          <cds-aichat-history-panel-item
+                            data-item-id="${item.id}"
+                            title="${item.title}"
+                            ?selected=${item.selected}
+                            ?rename=${item.rename}
+                            .actions=${pinnedHistoryItemActions}
+                          ></cds-aichat-history-panel-item>
+                        `,
+                      )}
+                    </cds-aichat-history-panel-menu>
+                    ${historyItems.map(
+                      (item) => html`
+                        <cds-aichat-history-panel-menu
+                          expanded
+                          title="${item.section}"
+                        >
+                          ${item.icon}
+                          ${item.chats.map(
+                            (chat) => html`
+                              <cds-aichat-history-panel-item
+                                data-item-id="${chat.id}"
+                                title="${chat.title}"
+                                .actions=${historyItemActions}
+                              ></cds-aichat-history-panel-item>
+                            `,
+                          )}
+                        </cds-aichat-history-panel-menu>
+                      `,
+                    )}
+                  `
+                : ""}
+            </cds-aichat-history-panel-items>
+          </cds-aichat-history-panel>
+        </cds-aichat-history-content>
+      </cds-aichat-history-shell>
+    `;
+  }
+}
+
+// Register the demo component
+if (!customElements.get("cds-aichat-history-demo")) {
+  customElements.define("cds-aichat-history-demo", ChatHistoryDemo);
+}
+
 export default {
   title: "Unstable/Chat History",
   component: "cds-aichat-history-shell",
@@ -29,7 +211,7 @@ export default {
       <style>
         ${styles}
       </style>
-      <cds-aichat-history-shell>${story()}</cds-aichat-history-shell>
+      ${story()}
     `,
   ],
 };
@@ -44,66 +226,11 @@ export const Default = {
   args: {
     HeaderTitle: "Conversations",
   },
-  render: (args) => {
-    // Handle history item actions
-    const handleHistoryItemAction = (event) => {
-      // Handle rename action
-      if (event.detail.action === "Rename") {
-        const element = event.detail.element;
-        if (element) {
-          element.rename = true;
-        }
-      }
-    };
-
-    // Add event listener (only once)
-    setTimeout(() => {
-      document.addEventListener("history-item-action", handleHistoryItemAction);
-    }, 0);
-
-    return html` <cds-aichat-history-header
-        title="${args.HeaderTitle}"
-      ></cds-aichat-history-header>
-      <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
-      <cds-aichat-history-content>
-        <cds-aichat-history-panel aria-label="Chat history">
-          <cds-aichat-history-panel-items>
-            <cds-aichat-history-panel-menu expanded title="Pinned">
-              ${iconLoader(PinFilled16, {
-                slot: "title-icon",
-              })}
-              ${pinnedHistoryItems.map(
-                (item) => html`
-                  <cds-aichat-history-panel-item
-                    data-item-id="${item.id}"
-                    title="${item.title}"
-                    ?selected=${item.selected}
-                    ?rename=${item.rename}
-                    .actions=${pinnedHistoryItemActions}
-                  ></cds-aichat-history-panel-item>
-                `,
-              )}
-            </cds-aichat-history-panel-menu>
-            ${historyItems.map(
-              (item) => html`
-                <cds-aichat-history-panel-menu expanded title="${item.section}">
-                  ${item.icon}
-                  ${item.chats.map(
-                    (chat) => html`
-                      <cds-aichat-history-panel-item
-                        data-item-id="${chat.id}"
-                        title="${chat.title}"
-                        .actions=${historyItemActions}
-                      ></cds-aichat-history-panel-item>
-                    `,
-                  )}
-                </cds-aichat-history-panel-menu
-              `,
-            )}
-          </cds-aichat-history-panel-items>
-        </cds-aichat-history-panel>
-      </cds-aichat-history-content>`;
-  },
+  render: (args) => html`
+    <cds-aichat-history-demo
+      header-title="${args.HeaderTitle}"
+    ></cds-aichat-history-demo>
+  `,
 };
 
 export const SearchResults = {
@@ -112,6 +239,7 @@ export const SearchResults = {
   },
   render: (args) => {
     return html`
+    <cds-aichat-history-shell>
       <cds-aichat-history-header
         title="${args.HeaderTitle}"
       ></cds-aichat-history-header>
@@ -141,6 +269,7 @@ export const SearchResults = {
         </cds-aichat-history-panel-items>
         </cds-aichat-history-panel>
       </cds-aichat-history-content>
+    </cds-aichat-history-shell>
     `;
   },
 };
@@ -151,11 +280,32 @@ export const Loading = {
   },
   render: (args) => {
     return html`
-      <cds-aichat-history-header
-        title="${args.HeaderTitle}"
-      ></cds-aichat-history-header>
-      <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
-      <cds-aichat-history-loading></cds-aichat-history-loading>
+      <cds-aichat-history-shell>
+        <cds-aichat-history-header
+          title="${args.HeaderTitle}"
+        ></cds-aichat-history-header>
+        <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+        <cds-aichat-history-loading></cds-aichat-history-loading>
+      </cds-aichat-history-shell>
+    `;
+  },
+};
+
+export const EmptyState = {
+  args: {
+    HeaderTitle: "Chats",
+  },
+  render: (args) => {
+    return html`
+      <cds-aichat-history-shell>
+        <cds-aichat-history-header
+          title="${args.HeaderTitle}"
+        ></cds-aichat-history-header>
+        <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+        <cds-aichat-history-content>
+          <div slot="results-count">No available chats</div>
+        </cds-aichat-history-content>
+      </cds-aichat-history-shell>
     `;
   },
 };

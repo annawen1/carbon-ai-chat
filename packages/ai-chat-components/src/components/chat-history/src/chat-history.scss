@@ -140,6 +140,7 @@
     border: none;
     background-color: transparent;
     block-size: convert.rem(40px);
+    cursor: pointer;
     font-family: inherit;
     inline-size: 100%;
     outline: 2px solid transparent;
@@ -166,6 +167,12 @@
   }
 }
 
+:host(#{$prefix}-history-panel-item[rename]) {
+  display: flex;
+  align-items: center;
+  block-size: convert.rem(40px);
+}
+
 :host(#{$prefix}-history-panel-item[selected]) {
   button.#{$cds-prefix}--side-nav__link {
     background-color: theme.$layer-selected;
@@ -181,23 +188,22 @@
   }
 }
 
-:host(#{$prefix}-history-panel-item-input)
-  .#{$prefix}--history-panel-item--rename {
-  justify-content: flex-start;
+:host(#{$prefix}-history-panel-item-input) {
   padding: 0 layout.$spacing-06;
-  inline-size: auto;
+  inline-size: 100%;
 
   .#{$prefix}--history-panel-item--rename__input {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    block-size: layout.$spacing-08;
+    block-size: layout.$spacing-07;
     inline-size: 100%;
     outline: layout.$spacing-01 solid theme.$focus;
-    outline-offset: -2px;
   }
 
   input {
+    @include type.type-style("body-01");
+
     overflow: hidden;
     flex-grow: 2;
     border: none;
@@ -224,6 +230,7 @@
 
   .#{$cds-prefix}--side-nav__link-text {
     inline-size: 100%;
+    text-align: start;
   }
 
   .#{$cds-prefix}--side-nav__link-subtitle {
