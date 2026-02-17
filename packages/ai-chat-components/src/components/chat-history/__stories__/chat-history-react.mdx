@@ -1,0 +1,137 @@
+import { ArgTypes, Markdown, Meta } from '@storybook/addon-docs/blocks';
+import { cdnJs, cdnCss } from "../../../globals/internal/storybook-cdn";
+import * as ChatHistoryStories from "./chat-history-react.stories";
+
+<Meta of={ChatHistoryStories} />
+
+# AI Chat History
+
+
+## Getting started
+
+Here's a quick example to get you started.
+
+### JS (via import)
+
+```javascript
+import "@carbon/ai-chat-components/es/react/history.js";
+```
+
+### HTML
+
+```jsx
+import {
+  HistoryShell,
+  HistoryHeader,
+  HistoryToolbar,
+  HistoryContent,
+  HistoryLoading,
+  HistoryPanel,
+  HistoryPanelMenu,
+  HistoryPanelItem,
+  HistoryPanelItems,
+  HistorySearchItem,
+} from "@carbon/ai-chat-components/es/react/history";
+import { PinFilled, Search } from "@carbon/icons-react";
+
+function ChatHistory() {
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleSearchInput = (event) => {
+    setSearchValue(event.detail.value);
+  };
+
+  const handleHistoryItemAction = (event) => {
+    if (event.detail.action === "Rename") {
+      const element = event.detail.element;
+      if (element) {
+        element.rename = true;
+      }
+    }
+  };
+
+  return (
+    <HistoryShell>
+      <HistoryHeader title="Conversations" />
+      <HistoryToolbar onCdsSearchInput={handleSearchInput} />
+      <HistoryContent>
+        <div slot="results-count">Results: 10</div>
+        <HistoryPanel aria-label="Chat history">
+          <HistoryPanelItems>
+            <HistoryPanelMenu expanded title="Pinned">
+              <PinFilled slot="title-icon" />
+              <HistoryPanelItem
+                id="chat-1"
+                title="Important conversation"
+                selected={true}
+                actions={pinnedHistoryItemActions}
+                onHistoryItemAction={handleHistoryItemAction}
+              />
+            </HistoryPanelMenu>
+            <HistoryPanelMenu expanded title="Today">
+              <Search slot="title-icon" />
+              <HistoryPanelItem
+                id="chat-2"
+                title="Recent chat"
+                actions={historyItemActions}
+                onHistoryItemAction={handleHistoryItemAction}
+              />
+            </HistoryPanelMenu>
+          </HistoryPanelItems>
+        </HistoryPanel>
+      </HistoryContent>
+    </HistoryShell>
+  );
+}
+```
+
+### Loading State
+
+```jsx
+<HistoryShell>
+  <HistoryHeader title="Chats" />
+  <HistoryToolbar />
+  <HistoryLoading />
+</HistoryShell>
+```
+
+### Search Results
+
+```jsx
+<HistoryShell>
+  <HistoryHeader title="Chats" />
+  <HistoryToolbar />
+  <HistoryContent>
+    <div slot="results-count">Results: 4</div>
+    <HistoryPanel aria-label="Search results">
+      <HistoryPanelItems>
+        <HistoryPanelMenu expanded title="Search results">
+          <Search slot="title-icon" />
+          <HistorySearchItem date="Monday, 12:04 PM">
+            Here's the onboarding doc that includes all the information to get started.
+          </HistorySearchItem>
+          <HistorySearchItem date="Monday, 12:04 PM">
+            Let's use this as the master invoice document.
+          </HistorySearchItem>
+        </HistoryPanelMenu>
+      </HistoryPanelItems>
+    </HistoryPanel>
+  </HistoryContent>
+</HistoryShell>
+```
+
+### Empty State
+
+```jsx
+<HistoryShell>
+  <HistoryHeader title="Chats" />
+  <HistoryToolbar />
+  <HistoryContent>
+    <div slot="results-count">No available chats</div>
+  </HistoryContent>
+</HistoryShell>
+```
+
+## Feedback
+
+Open an issue at https://github.com/carbon-design-system/carbon-ai-chat/issues to provide feedback or request changes.

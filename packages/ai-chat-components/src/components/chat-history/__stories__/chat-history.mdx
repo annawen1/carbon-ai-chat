@@ -1,0 +1,268 @@
+import { ArgTypes, Markdown, Meta } from '@storybook/addon-docs/blocks';
+
+import { cdnJs, cdnCss } from "../../../globals/internal/storybook-cdn";
+import * as ChatHistoryStories from "./chat-history.stories";
+
+<Meta of={ChatHistoryStories} parameters={{ previewTabs: { "storybook/docs/panel": { title: "Overview" } } }} />
+
+# Chat history
+
+[Source code](https://github.com/carbon-design-system/carbon-ai-chat/tree/main/packages/ai-chat-components/src/components/chat-history) &nbsp;|&nbsp; [Feedback](https://github.com/carbon-design-system/carbon-ai-chat/issues)
+
+{/* <!-- START doctoc generated TOC please keep comment here to allow auto update --> <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE --> */}
+
+## Table of Contents
+- [Overview](#overview)
+- [Usage Examples](#usage-examples)
+- [Component API](#component-api)
+- [JS (via import)](#js-via-import)
+- [JS (via CDN)](#js-via-cdn)
+- [Feedback](#feedback)
+
+## Overview
+
+The **`<cds-aichat-history-shell>`** component provides a structured layout for displaying and managing chat conversation history. It defines three dedicated slots that organize the chat history interface:
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Slot Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>header</code></td>
+      <td>Represents the header section, containing title and actions.</td>
+    </tr>
+    <tr>
+      <td><code>toolbar</code></td>
+      <td>Represents the toolbar area of the chat history component (includes search, new chat button, etc).</td>
+    </tr>
+    <tr>
+      <td><code>content</code></td>
+      <td>List of the chat history items.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+Each of these slots can accept **any element or component**, allowing users to freely construct and customize the chat history layout as needed.
+Alternatively, adopters can use the **provided subcomponents**, which are designed specifically for each section. These subcomponents offer consistent styling and default behaviors that align with the AI Chat design patterns.
+
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Section</th>
+      <th>Subcomponent</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Header</td>
+      <td><code>{'<cds-aichat-history-header>'}</code></td>
+      <td>Displays the chat history title with close and expand actions.</td>
+    </tr>
+    <tr>
+      <td>Toolbar</td>
+      <td><code>{'<cds-aichat-history-toolbar>'}</code></td>
+      <td>Contains search functionality and new chat button.</td>
+    </tr>
+    <tr>
+      <td>Content</td>
+      <td><code>{'<cds-aichat-history-content>'}</code></td>
+      <td>Container for chat history items with optional results count.</td>
+    </tr>
+    <tr>
+      <td>Loading</td>
+      <td><code>{'<cds-aichat-history-loading>'}</code></td>
+      <td>Skeleton loading state for chat history.</td>
+    </tr>
+  </tbody>
+</table>
+
+### History Panel Components
+
+The chat history also includes specialized panel components for organizing and displaying conversation items:
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>{'<cds-aichat-history-panel>'}</code></td>
+      <td>Main container for organizing chat history items.</td>
+    </tr>
+    <tr>
+      <td><code>{'<cds-aichat-history-panel-menu>'}</code></td>
+      <td>Collapsible menu section for grouping related chat items (e.g., "Pinned", "Today", "Yesterday").</td>
+    </tr>
+    <tr>
+      <td><code>{'<cds-aichat-history-panel-items>'}</code></td>
+      <td>Container for panel items within a menu.</td>
+    </tr>
+    <tr>
+      <td><code>{'<cds-aichat-history-panel-item>'}</code></td>
+      <td>Individual chat conversation item with title, selection state, and actions menu.</td>
+    </tr>
+    <tr>
+      <td><code>{'<cds-aichat-history-search-item>'}</code></td>
+      <td>Search result item displaying chat title and date.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+Using these subcomponents ensures visual consistency and predictable structure while still giving you the flexibility to build a fully customized chat history experience.
+
+## Usage Examples
+
+### Basic Chat History
+
+```html
+<cds-aichat-history-shell>
+  <cds-aichat-history-header title="Conversations"></cds-aichat-history-header>
+  <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+  <cds-aichat-history-content>
+    <cds-aichat-history-panel aria-label="Chat history">
+      <cds-aichat-history-panel-items>
+        <cds-aichat-history-panel-menu expanded title="Pinned">
+          <cds-aichat-history-panel-item
+            id="chat-1"
+            title="Important conversation"
+            selected
+          ></cds-aichat-history-panel-item>
+        </cds-aichat-history-panel-menu>
+        <cds-aichat-history-panel-menu expanded title="Today">
+          <cds-aichat-history-panel-item
+            id="chat-2"
+            title="Recent chat"
+          ></cds-aichat-history-panel-item>
+          <cds-aichat-history-panel-item
+            id="chat-3"
+            title="Another chat"
+          ></cds-aichat-history-panel-item>
+        </cds-aichat-history-panel-menu>
+      </cds-aichat-history-panel-items>
+    </cds-aichat-history-panel>
+  </cds-aichat-history-content>
+</cds-aichat-history-shell>
+```
+
+### With Search Results
+
+```html
+<cds-aichat-history-shell>
+  <cds-aichat-history-header title="Chats"></cds-aichat-history-header>
+  <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+  <cds-aichat-history-content>
+    <div slot="results-count">Results: 4</div>
+    <cds-aichat-history-panel aria-label="Search results">
+      <cds-aichat-history-panel-items>
+        <cds-aichat-history-panel-menu expanded title="Search results">
+          <cds-aichat-history-search-item date="Monday, 12:04 PM">
+            Here's the onboarding doc that includes all the information to get started.
+          </cds-aichat-history-search-item>
+          <cds-aichat-history-search-item date="Monday, 12:04 PM">
+            Let's use this as the master invoice document.
+          </cds-aichat-history-search-item>
+          <cds-aichat-history-search-item date="Monday, 12:04 PM">
+            Noticed some discrepancies between these two files.
+          </cds-aichat-history-search-item>
+          <cds-aichat-history-search-item date="Monday, 12:04 PM">
+            Do we need a PO number on every documentation here?
+          </cds-aichat-history-search-item>
+        </cds-aichat-history-panel-menu>
+      </cds-aichat-history-panel-items>
+    </cds-aichat-history-panel>
+  </cds-aichat-history-content>
+</cds-aichat-history-shell>
+```
+
+### Loading State
+
+```html
+<cds-aichat-history-shell>
+  <cds-aichat-history-header title="Chats"></cds-aichat-history-header>
+  <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+  <cds-aichat-history-loading></cds-aichat-history-loading>
+</cds-aichat-history-shell>
+```
+
+### Empty State
+
+```html
+<cds-aichat-history-shell>
+  <cds-aichat-history-header title="Chats"></cds-aichat-history-header>
+  <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+  <cds-aichat-history-content>
+    <div slot="results-count">No available chats</div>
+  </cds-aichat-history-content>
+</cds-aichat-history-shell>
+```
+
+### With Actions and Event Handling
+
+```html
+<cds-aichat-history-shell>
+  <cds-aichat-history-header title="Conversations"></cds-aichat-history-header>
+  <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+  <cds-aichat-history-content>
+    <cds-aichat-history-panel aria-label="Chat history">
+      <cds-aichat-history-panel-items>
+        <cds-aichat-history-panel-menu expanded title="Today">
+          <cds-aichat-history-panel-item
+            id="chat-1"
+            title="Chat with actions"
+          ></cds-aichat-history-panel-item>
+        </cds-aichat-history-panel-menu>
+      </cds-aichat-history-panel-items>
+    </cds-aichat-history-panel>
+  </cds-aichat-history-content>
+</cds-aichat-history-shell>
+
+<script>
+  // Listen for history item actions
+  document.addEventListener('history-item-action', (event) => {
+    console.log('Action:', event.detail.action);
+    console.log('Item ID:', event.detail.itemId);
+    console.log('Item Title:', event.detail.itemTitle);
+
+    // Handle rename action
+    if (event.detail.action === 'Rename') {
+      event.detail.element.rename = true;
+    }
+  });
+
+  // Listen for search input
+  document.addEventListener('cds-search-input', (event) => {
+    const searchValue = event.detail.value;
+    console.log('Search value:', searchValue);
+    // Implement search logic here
+  });
+</script>
+```
+
+## Component API
+
+<ArgTypes of="cds-aichat-history-shell" />
+
+## JS (via import)
+
+```javascript
+import "@carbon/ai-chat-components/es/components/chat-history/index.js";
+```
+
+
+<Markdown>{`${cdnJs(['chat-history'])}`}</Markdown>
+<Markdown>{`${cdnCss()}`}</Markdown>
+
+## Feedback
+
+Open an issue at https://github.com/carbon-design-system/carbon-ai-chat/issues to provide feedback or request changes.
