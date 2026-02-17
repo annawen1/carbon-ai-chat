@@ -39,7 +39,7 @@ export interface Action {
  *
  */
 @carbonElement(`${prefix}-history-panel-item`)
-export class CDSAIChatHistoryPanelItem extends FocusMixin(LitElement) {
+class CDSAIChatHistoryPanelItem extends FocusMixin(LitElement) {
   /**
    * `true` if the history panel item is selected.
    */
@@ -186,4 +186,5 @@ export class CDSAIChatHistoryPanelItem extends FocusMixin(LitElement) {
   static styles = styles;
 }
 
+export { CDSAIChatHistoryPanelItem };
 export default CDSAIChatHistoryPanelItem;

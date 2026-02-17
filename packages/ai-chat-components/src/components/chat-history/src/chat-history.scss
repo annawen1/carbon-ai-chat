@@ -70,6 +70,7 @@
 }
 
 :host(#{$prefix}-history-loading) {
+  overflow: hidden;
   padding: layout.$spacing-06;
 
   #{$cds-prefix}-skeleton-text {

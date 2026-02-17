@@ -22,7 +22,7 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-shell`)
-export class CDSAIChatHistoryShell extends LitElement {
+class CDSAIChatHistoryShell extends LitElement {
   render() {
     return html` <slot name="header"></slot>
       <slot name="toolbar"></slot>
@@ -32,4 +32,5 @@ export class CDSAIChatHistoryShell extends LitElement {
   static styles = styles;
 }
 
+export { CDSAIChatHistoryShell };
 export default CDSAIChatHistoryShell;

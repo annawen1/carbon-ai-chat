@@ -17,6 +17,9 @@ const HistoryToolbar = withWebComponentBridge(
     tagName: "cds-aichat-history-toolbar",
     elementClass: CDSAIChatHistoryToolbar,
     react: React,
+    events: {
+      onCdsSearchInput: "cds-search-input",
+    },
   }),
 );
 

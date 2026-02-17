@@ -208,7 +208,7 @@ export default {
       <style>
         ${styles}
       </style>
-      ${story()}
+      <div class="chat-history-story-container">${story()}</div>
     `,
   ],
 };

@@ -21,7 +21,7 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-panel`)
-export class CDSAIChatHistoryPanel extends CDSSideNav {
+class CDSAIChatHistoryPanel extends CDSSideNav {
   /**
    * Sets default property from side nav
    */
@@ -42,4 +42,5 @@ export class CDSAIChatHistoryPanel extends CDSSideNav {
   static styles = styles;
 }
 
+export { CDSAIChatHistoryPanel };
 export default CDSAIChatHistoryPanel;

@@ -1,0 +1,268 @@
+/*
+ *  Copyright IBM Corp. 2026
+ *
+ *  This source code is licensed under the Apache-2.0 license found in the
+ *  LICENSE file in the root directory of this source tree.
+ *
+ *  @license
+ */
+
+/* eslint-disable */
+import React, { useState, useCallback } from "react";
+import {
+  HistoryShell,
+  HistoryHeader,
+  HistoryToolbar,
+  HistoryContent,
+  HistoryLoading,
+  HistoryPanel,
+  HistoryPanelMenu,
+  HistoryPanelItem,
+  HistoryPanelItems,
+  HistorySearchItem,
+} from "../../../react/history";
+
+import {
+  historyItemActions,
+  pinnedHistoryItemActions,
+  pinnedHistoryItems,
+  historyItems,
+} from "./story-data";
+
+import { PinFilled, Search } from "@carbon/icons-react";
+
+export default {
+  title: "Unstable/Chat History",
+  component: HistoryShell,
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          padding: "42px 42px 0",
+          blockSize: "95vh",
+          inlineSize: "400px",
+        }}
+      >
+        <div style={{ blockSize: "100%" }}>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
+};
+
+export const Default = {
+  argTypes: {
+    HeaderTitle: {
+      control: "text",
+      description: "Header title text of the chat history shell",
+    },
+  },
+  args: {
+    HeaderTitle: "Conversations",
+  },
+  render: (args) => {
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchTotalCount, setSearchTotalCount] = useState(0);
+    const [searchValue, setSearchValue] = useState("");
+    const [pinnedItems, setPinnedItems] = useState(
+      pinnedHistoryItems.map((item) => ({ ...item, rename: false })),
+    );
+    const [regularItems, setRegularItems] = useState(
+      historyItems.map((section) => ({
+        ...section,
+        chats: section.chats.map((chat) => ({ ...chat, rename: false })),
+      })),
+    );
+
+    const handleHistoryItemAction = useCallback((event) => {
+      // Handle rename action
+      if (event.detail.action === "Rename") {
+        const element = event.detail.element;
+        if (element) {
+          element.rename = true;
+        }
+      }
+    }, []);
+
+    const handleSearchInput = useCallback((event) => {
+      const searchVal = event.detail.value.toLowerCase();
+
+      // Combine all results into a single array
+      const results = [];
+
+      // Add matching pinned items
+      pinnedHistoryItems.forEach((item) => {
+        if (item.title.toLowerCase().includes(searchVal)) {
+          results.push({
+            ...item,
+            isPinned: true,
+          });
+        }
+      });
+
+      // Add matching history items
+      historyItems.forEach((section) => {
+        section.chats.forEach((chat) => {
+          if (chat.title.toLowerCase().includes(searchVal)) {
+            results.push({
+              ...chat,
+              section: section.section,
+              isPinned: false,
+            });
+          }
+        });
+      });
+
+      setSearchResults(results);
+      setSearchTotalCount(results.length);
+      setSearchValue(searchVal);
+    }, []);
+
+    const showSearchResults = searchTotalCount > 0 && searchValue;
+    const noSearchResults = searchTotalCount === 0 && searchValue;
+
+    return (
+      <HistoryShell>
+        <HistoryHeader title={args.HeaderTitle} />
+        <HistoryToolbar onCdsSearchInput={handleSearchInput} />
+        <HistoryContent>
+          {(showSearchResults || noSearchResults) && (
+            <div slot="results-count">Results: {searchTotalCount}</div>
+          )}
+          <HistoryPanel aria-label="Chat history">
+            <HistoryPanelItems>
+              {noSearchResults && (
+                <HistoryPanelMenu expanded title="Search results">
+                  <Search slot="title-icon" />
+                  <HistorySearchItem disabled>
+                    No available chats
+                  </HistorySearchItem>
+                </HistoryPanelMenu>
+              )}
+              {showSearchResults && (
+                <HistoryPanelMenu expanded title="Search results">
+                  <Search slot="title-icon" />
+                  {searchResults.map((result) => (
+                    <HistorySearchItem
+                      key={result.id}
+                      date={result.lastUpdated}
+                    >
+                      {result.title}
+                    </HistorySearchItem>
+                  ))}
+                </HistoryPanelMenu>
+              )}
+              {!showSearchResults && !noSearchResults && (
+                <>
+                  <HistoryPanelMenu expanded title="Pinned">
+                    <PinFilled slot="title-icon" />
+                    {pinnedItems.map((item) => (
+                      <HistoryPanelItem
+                        key={item.id}
+                        id={item.id}
+                        title={item.title}
+                        selected={item.selected}
+                        rename={item.rename}
+                        actions={pinnedHistoryItemActions}
+                        onHistoryItemAction={handleHistoryItemAction}
+                      />
+                    ))}
+                  </HistoryPanelMenu>
+                  {regularItems.map((item) => (
+                    <HistoryPanelMenu
+                      key={item.section}
+                      expanded
+                      title={item.section}
+                    >
+                      <Search slot="title-icon" />
+                      {item.chats.map((chat) => (
+                        <HistoryPanelItem
+                          key={chat.id}
+                          id={chat.id}
+                          title={chat.title}
+                          rename={chat.rename}
+                          actions={historyItemActions}
+                          onHistoryItemAction={handleHistoryItemAction}
+                        />
+                      ))}
+                    </HistoryPanelMenu>
+                  ))}
+                </>
+              )}
+            </HistoryPanelItems>
+          </HistoryPanel>
+        </HistoryContent>
+      </HistoryShell>
+    );
+  },
+};
+
+export const SearchResults = {
+  args: {
+    HeaderTitle: "Chats",
+  },
+  render: (args) => {
+    return (
+      <HistoryShell>
+        <HistoryHeader title={args.HeaderTitle} />
+        <HistoryToolbar />
+        <HistoryContent>
+          <div slot="results-count">Results: 4</div>
+          <HistoryPanel aria-label="Search results">
+            <HistoryPanelItems>
+              <HistoryPanelMenu expanded title="Search results">
+                <Search slot="title-icon" />
+                <HistorySearchItem date="Monday, 12:04 PM">
+                  Here's the onboarding doc that includes all the information to
+                  get started.
+                </HistorySearchItem>
+                <HistorySearchItem date="Monday, 12:04 PM">
+                  Let's use this as the master invoice document.
+                </HistorySearchItem>
+                <HistorySearchItem date="Monday, 12:04 PM">
+                  Noticed some discrepancies between these two files.
+                </HistorySearchItem>
+                <HistorySearchItem date="Monday, 12:04 PM">
+                  Do we need a PO number on every documentation here?
+                </HistorySearchItem>
+              </HistoryPanelMenu>
+            </HistoryPanelItems>
+          </HistoryPanel>
+        </HistoryContent>
+      </HistoryShell>
+    );
+  },
+};
+
+export const Loading = {
+  args: {
+    HeaderTitle: "Chats",
+  },
+  render: (args) => {
+    return (
+      <HistoryShell>
+        <HistoryHeader title={args.HeaderTitle} />
+        <HistoryToolbar />
+        <HistoryLoading />
+      </HistoryShell>
+    );
+  },
+};
+
+export const EmptyState = {
+  args: {
+    HeaderTitle: "Chats",
+  },
+  render: (args) => {
+    return (
+      <HistoryShell>
+        <HistoryHeader title={args.HeaderTitle} />
+        <HistoryToolbar />
+        <HistoryContent>
+          <div slot="results-count">No available chats</div>
+        </HistoryContent>
+      </HistoryShell>
+    );
+  },
+};
