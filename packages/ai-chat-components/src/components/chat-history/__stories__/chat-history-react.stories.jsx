@@ -21,6 +21,7 @@ import {
   HistoryPanelItems,
   HistorySearchItem,
 } from "../../../react/history";
+import "./story-styles.scss";
 
 import {
   historyItemActions,
@@ -36,16 +37,8 @@ export default {
   component: HistoryShell,
   decorators: [
     (Story) => (
-      <div
-        style={{
-          padding: "42px 42px 0",
-          blockSize: "95vh",
-          inlineSize: "400px",
-        }}
-      >
-        <div style={{ blockSize: "100%" }}>
-          <Story />
-        </div>
+      <div className="chat-history-story-container">
+        <Story />
       </div>
     ),
   ],
