@@ -9,8 +9,6 @@ import * as ChatHistoryStories from "./chat-history.stories";
 
 [Source code](https://github.com/carbon-design-system/carbon-ai-chat/tree/main/packages/ai-chat-components/src/components/chat-history) &nbsp;|&nbsp; [Feedback](https://github.com/carbon-design-system/carbon-ai-chat/issues)
 
-{/* <!-- START doctoc generated TOC please keep comment here to allow auto update --> <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE --> */}
-
 ## Table of Contents
 - [Overview](#overview)
 - [Usage Examples](#usage-examples)
@@ -247,6 +245,91 @@ Using these subcomponents ensures visual consistency and predictable structure w
     // Implement search logic here
   });
 </script>
+```
+
+### Event Listeners
+
+The chat history components emit several custom events that you can listen for to handle user interactions:
+
+#### `history-item-action`
+
+Fired when a user clicks on an action in the overflow menu of a history panel item.
+
+**Event Detail Properties:**
+- `action` (string) - The text of the action that was clicked (e.g., "Rename", "Delete", "Pin")
+- `itemId` (string) - The ID of the history item
+- `itemTitle` (string) - The title of the history item
+- `element` (HTMLElement) - Reference to the `cds-aichat-history-panel-item` element
+
+**Example:**
+```javascript
+document.addEventListener('history-item-action', (event) => {
+  const { action, itemId, itemTitle, element } = event.detail;
+
+  switch(action) {
+    case 'Rename':
+      // Enable rename mode on the item
+      element.rename = true;
+      break;
+    case 'Delete':
+      // Handle delete action
+      console.log(`Deleting chat: ${itemTitle}`);
+      break;
+    case 'Pin':
+      // Handle pin action
+      console.log(`Pinning chat: ${itemTitle}`);
+      break;
+  }
+});
+```
+
+#### `cds-search-input`
+
+Fired when the user types in the search field of the history toolbar.
+
+**Event Detail Properties:**
+- `value` (string) - The current search input value
+
+**Example:**
+```javascript
+document.addEventListener('cds-search-input', (event) => {
+  const searchValue = event.detail.value.toLowerCase();
+
+  // Filter and display search results
+  const results = filterChatHistory(searchValue);
+  updateSearchResults(results);
+});
+```
+
+#### `cds-aichat-history-panel-item-input-save`
+
+Fired when the user saves a renamed history item.
+
+**Event Detail Properties:**
+- `newTitle` (string) - The new title entered by the user
+- `itemId` (string) - The ID of the history item being renamed
+
+**Example:**
+```javascript
+document.addEventListener('cds-aichat-history-panel-item-input-save', (event) => {
+  const { newTitle, itemId } = event.detail;
+  console.log(`Item ${itemId} renamed to: ${newTitle}`);
+
+  // Update the item title in your data store
+  updateChatTitle(itemId, newTitle);
+});
+```
+
+#### `cds-aichat-history-panel-item-input-cancel`
+
+Fired when the user cancels renaming a history item (e.g., by pressing Escape or clicking outside).
+
+**Example:**
+```javascript
+document.addEventListener('cds-aichat-history-panel-item-input-cancel', (event) => {
+  console.log('Rename cancelled');
+  // Optionally handle cancel action
+});
 ```
 
 ## Component API
