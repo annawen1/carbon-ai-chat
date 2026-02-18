@@ -15,7 +15,7 @@ import { carbonElement } from "../../../globals/decorators/carbon-element.js";
 import "@carbon/web-components/es/components/icon-button/index.js";
 import { iconLoader } from "@carbon/web-components/es/globals/internal/icon-loader.js";
 import ChevronLeft16 from "@carbon/icons/es/chevron--left/16.js";
-import RightPanelClose16 from "@carbon/icons/es/right-panel--close/16.js";
+import SidePanelClose16 from "@carbon/icons/es/side-panel--close/16.js";
 import styles from "./chat-history.scss?lit";
 
 /**
@@ -39,16 +39,17 @@ class CDSAIChatHistoryHeader extends LitElement {
   title = "Conversations";
 
   /**
+   * `true` if chat history is placed in start / left side panel next to chat
+   *  will render the close chat history button with side-panel-close icon instead
+   */
+  @property({ type: Boolean, attribute: "start-panel", reflect: true })
+  startPanel = false;
+
+  /**
    * Label for close chat history button.
    */
   @property({ type: String, attribute: "close-button-label" })
   closeButtonLabel = "Close chat history";
-
-  /**
-   * Label for expanding chat history panel button.
-   */
-  @property({ type: String, attribute: "expand-chat-label" })
-  expandChatLabel = "Expand chat panel";
 
   /**
    * Render close chat history panel button
@@ -56,26 +57,53 @@ class CDSAIChatHistoryHeader extends LitElement {
   @property({ type: Boolean, attribute: "show-close-action", reflect: true })
   showCloseAction = true;
 
-  render() {
-    const { closeButtonLabel, expandChatLabel, showCloseAction, title } = this;
+  /**
+   * Handles close button click event
+   */
+  _handleCloseButtonClick = () => {
+    this.dispatchEvent(
+      new CustomEvent("history-header-close-click", {
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  };
 
-    return html` ${showCloseAction &&
+  /**
+   * Handle keydown event on close button
+   * @param event
+   */
+  _handleCloseButtonKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      this._handleCloseButtonClick();
+    }
+  };
+
+  render() {
+    const {
+      closeButtonLabel,
+      showCloseAction,
+      title,
+      startPanel,
+      _handleCloseButtonClick: handleCloseButtonClick,
+      _handleCloseButtonKeyDown: handleCloseButtonKeyDown,
+    } = this;
+
+    return html`
+      ${showCloseAction &&
       html`<cds-icon-button
         class="${prefix}--history-header__close-button"
         kind="ghost"
+        @click=${handleCloseButtonClick}
+        @keydown=${handleCloseButtonKeyDown}
       >
-        ${iconLoader(ChevronLeft16, {
-          slot: "icon",
-        })}
+        ${startPanel
+          ? iconLoader(SidePanelClose16, { slot: "icon" })
+          : iconLoader(ChevronLeft16, { slot: "icon" })}
         <span slot="tooltip-content">${closeButtonLabel}</span>
       </cds-icon-button>`}
       <span class="${prefix}--history-header__title">${title}</span>
-      <cds-icon-button kind="ghost">
-        ${iconLoader(RightPanelClose16, {
-          slot: "icon",
-        })}
-        <span slot="tooltip-content">${expandChatLabel}</span>
-      </cds-icon-button>`;
+    `;
   }
 
   static styles = styles;

@@ -16,6 +16,8 @@ import prefix from "../../../globals/settings.js";
 import { carbonElement } from "../../../globals/decorators/carbon-element.js";
 import "./history-panel-item-input.js";
 import FocusMixin from "@carbon/web-components/es/globals/mixins/focus.js";
+import HostListener from "@carbon/web-components/es/globals/decorators/host-listener";
+import HostListenerMixin from "@carbon/web-components/es/globals/mixins/host-listener";
 import { CarbonIcon } from "@carbon/web-components/es/globals/internal/icon-loader-utils.js";
 import OverflowMenuVertical16 from "@carbon/icons/es/overflow-menu--vertical/16.js";
 import { iconLoader } from "@carbon/web-components/es/globals/internal/icon-loader.js";
@@ -39,7 +41,9 @@ export interface Action {
  *
  */
 @carbonElement(`${prefix}-history-panel-item`)
-class CDSAIChatHistoryPanelItem extends FocusMixin(LitElement) {
+class CDSAIChatHistoryPanelItem extends HostListenerMixin(
+  FocusMixin(LitElement),
+) {
   /**
    * `true` if the history panel item is selected.
    */
@@ -80,7 +84,7 @@ class CDSAIChatHistoryPanelItem extends FocusMixin(LitElement) {
   /**
    * Handle menu item clicks
    */
-  _handleMenuItemClick = (event: Event) => {
+  private _handleMenuItemClick = (event: Event) => {
     const target = event.currentTarget as HTMLElement;
     const menuItemText =
       target.getAttribute("data-action-text") || target.textContent?.trim();
@@ -104,9 +108,56 @@ class CDSAIChatHistoryPanelItem extends FocusMixin(LitElement) {
    *
    * * @param event The event.
    */
-  _handleMenuItemKeyDown = (event: KeyboardEvent) => {
+  private _handleMenuItemKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
       this._handleMenuItemClick(event);
+    }
+  };
+
+  @HostListener("click")
+  // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
+  private _handleClick(event: Event) {
+    const composedPath = event.composedPath();
+
+    // Check if the click originated from an interactive element (overflow menu, etc.)
+    // by checking the composed path for any overflow menu elements
+    const isOverflowMenuClick = composedPath.some((element) => {
+      if (element instanceof HTMLElement) {
+        const tagName = element.tagName?.toLowerCase();
+        return (
+          tagName?.includes("overflow-menu") ||
+          tagName === "cds-overflow-menu" ||
+          tagName === "cds-overflow-menu-body" ||
+          tagName === "cds-overflow-menu-item"
+        );
+      }
+      return false;
+    });
+
+    if (isOverflowMenuClick) {
+      return;
+    }
+
+    // Dispatch a custom event with item details
+    const itemActionEvent = new CustomEvent("history-item-selected", {
+      bubbles: true,
+      composed: true,
+      detail: {
+        itemId: this.id,
+        itemTitle: this.title,
+        element: this,
+      },
+    });
+    console.log("itemActionEvent", itemActionEvent);
+    this.dispatchEvent(itemActionEvent);
+  }
+
+  @HostListener("keydown")
+  // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
+  private _handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this._handleClick(event);
     }
   };
 

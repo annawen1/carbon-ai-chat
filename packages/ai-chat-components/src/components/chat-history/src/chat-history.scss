@@ -57,6 +57,11 @@
   }
 }
 
+:host(#{$prefix}-history-toolbar[search-off]) {
+  justify-content: flex-end;
+  border-block-end: convert.rem(1px) solid theme.$border-subtle-00;
+}
+
 :host(#{$prefix}-history-content) {
   display: block;
   block-size: 100%;

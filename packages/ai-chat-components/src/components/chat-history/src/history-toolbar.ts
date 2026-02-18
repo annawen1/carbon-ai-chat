@@ -7,7 +7,7 @@
  *  @license
  */
 
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { property } from "lit/decorators.js";
 import prefix from "../../../globals/settings.js";
 import { carbonElement } from "../../../globals/decorators/carbon-element.js";
@@ -38,19 +38,54 @@ class CDSAIChatHistoryToolbar extends LitElement {
   @property({ type: String, attribute: "new-chat-label" })
   newChatLabel = "New chat";
 
+  /**
+   * `true` to remove search from toolbar.
+   */
+  @property({ type: Boolean, attribute: "search-off", reflect: true })
+  searchOff;
+
+  /**
+   * Handles new chat button click event
+   */
+  _handleNewChatButtonClick = () => {
+    this.dispatchEvent(
+      new CustomEvent("chat-history-new-chat-click", {
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  };
+
+  /**
+   * Handle keydown event on new chat button
+   * @param event
+   */
+  _handleNewChatButtonKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      this._handleNewChatButtonClick();
+    }
+  };
+
   render() {
-    const { newChatLabel } = this;
+    const {
+      newChatLabel,
+      searchOff,
+      _handleNewChatButtonClick: handleNewChatButtonClick,
+      _handleNewChatButtonKeyDown: handleNewChatButtonKeyDown,
+    } = this;
 
     return html` <slot name="actions-start"></slot>
-      <cds-search></cds-search>
-      <slot name="actions-end">
-        <cds-icon-button>
-          ${iconLoader(AddComment16, {
-            slot: "icon",
-          })}
-          <span slot="tooltip-content">${newChatLabel}</span>
-        </cds-icon-button>
-      </slot>`;
+      ${!searchOff ? html`<cds-search></cds-search>` : nothing}
+      <slot name="actions-end"></slot>
+      <cds-icon-button
+        @click=${handleNewChatButtonClick}
+        @keydown=${handleNewChatButtonKeyDown}
+      >
+        ${iconLoader(AddComment16, {
+          slot: "icon",
+        })}
+        <span slot="tooltip-content">${newChatLabel}</span>
+      </cds-icon-button>`;
   }
 
   static styles = styles;

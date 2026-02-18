@@ -27,6 +27,8 @@ class ChatHistoryDemo extends LitElement {
     searchResults: { type: Array },
     searchTotalCount: { type: Number },
     searchValue: { type: String },
+    searchOff: { type: Boolean, attribute: "search-off" },
+    startPanel: { type: Boolean, attribute: "start-panel" },
   };
 
   static styles = css`
@@ -39,6 +41,8 @@ class ChatHistoryDemo extends LitElement {
   constructor() {
     super();
     this.headerTitle = "Conversations";
+    this.searchOff = false;
+    this.startPanel = false;
     this.searchResults = [];
     this.searchTotalCount = 0;
     this.searchValue = "";
@@ -102,8 +106,10 @@ class ChatHistoryDemo extends LitElement {
       <cds-aichat-history-shell>
         <cds-aichat-history-header
           title="${this.headerTitle}"
+          ?start-panel=${this.startPanel}
         ></cds-aichat-history-header>
-        <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
+        <cds-aichat-history-toolbar ?search-off=${this.searchOff}>
+        </cds-aichat-history-toolbar>
         <cds-aichat-history-content>
           ${showSearchResults || noSearchResults
             ? html`<div slot="results-count">
@@ -219,26 +225,37 @@ export const Default = {
       control: "text",
       description: "Header title text of the chat history shell",
     },
+    searchOff: {
+      control: "boolean",
+      description:
+        "true if search should be turned off in chat history toolbar.",
+    },
+    startPanel: {
+      control: "boolean",
+      description:
+        "true if chat history is diplayed in the left panel next to chat. Changes the close chat history icon.",
+    },
   },
   args: {
     HeaderTitle: "Conversations",
+    searchOff: false,
+    startPanel: false,
   },
   render: (args) => html`
     <cds-aichat-history-demo
       header-title="${args.HeaderTitle}"
+      ?start-panel=${args.startPanel}
+      ?search-off=${args.searchOff}
     ></cds-aichat-history-demo>
   `,
 };
 
 export const SearchResults = {
-  args: {
-    HeaderTitle: "Chats",
-  },
-  render: (args) => {
+  render: () => {
     return html`
     <cds-aichat-history-shell>
       <cds-aichat-history-header
-        title="${args.HeaderTitle}"
+        title="Chats"
       ></cds-aichat-history-header>
       <cds-aichat-history-toolbar></cds-aichat-history-toolbar>
       <cds-aichat-history-content>
