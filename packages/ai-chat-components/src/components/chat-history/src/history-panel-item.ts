@@ -51,7 +51,7 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
   selected = false;
 
   /**
-   * id of element
+   * id of chat history item element
    */
   @property({ type: String })
   id;
@@ -90,7 +90,7 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
       target.getAttribute("data-action-text") || target.textContent?.trim();
 
     // Dispatch a custom event with item details
-    const itemActionEvent = new CustomEvent("history-item-action", {
+    const itemActionEvent = new CustomEvent("history-item-menu-action", {
       bubbles: true,
       composed: true,
       detail: {
@@ -148,7 +148,6 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
         element: this,
       },
     });
-    console.log("itemActionEvent", itemActionEvent);
     this.dispatchEvent(itemActionEvent);
   }
 

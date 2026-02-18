@@ -17,6 +17,9 @@ const HistorySearchItem = withWebComponentBridge(
     tagName: "cds-aichat-history-search-item",
     elementClass: CDSAIChatHistorySearchItem,
     react: React,
+    events: {
+      onHistorySearchItemSelected: "history-search-item-selected",
+    },
   }),
 );
 

@@ -17,6 +17,9 @@ const HistoryHeader = withWebComponentBridge(
     tagName: "cds-aichat-history-header",
     elementClass: CDSAIChatHistoryHeader,
     react: React,
+    events: {
+      onHistoryHeaderCloseClick: "history-header-close-click",
+    },
   }),
 );
 

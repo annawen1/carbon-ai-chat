@@ -13,6 +13,8 @@ import { classMap } from "lit/directives/class-map.js";
 import prefix from "../../../globals/settings.js";
 import { carbonElement } from "../../../globals/decorators/carbon-element.js";
 import FocusMixin from "@carbon/web-components/es/globals/mixins/focus.js";
+import HostListener from "@carbon/web-components/es/globals/decorators/host-listener";
+import HostListenerMixin from "@carbon/web-components/es/globals/mixins/host-listener";
 import styles from "./chat-history.scss?lit";
 
 /**
@@ -22,7 +24,9 @@ import styles from "./chat-history.scss?lit";
  *
  */
 @carbonElement(`${prefix}-history-search-item`)
-class CDSAIChatHistorySearchItem extends FocusMixin(LitElement) {
+class CDSAIChatHistorySearchItem extends HostListenerMixin(
+  FocusMixin(LitElement),
+) {
   /**
    * Chat item title.
    */
@@ -34,6 +38,38 @@ class CDSAIChatHistorySearchItem extends FocusMixin(LitElement) {
    */
   @property({ type: String })
   date?: string;
+
+  /**
+   * id of chat history search item
+   */
+  @property({ type: String })
+  id;
+
+  @HostListener("click")
+  // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
+  private _handleClick() {
+    // Dispatch a custom event with item details
+    const itemActionEvent = new CustomEvent("history-search-item-selected", {
+      bubbles: true,
+      composed: true,
+      detail: {
+        itemId: this.id,
+        itemTitle: this.title,
+        element: this,
+      },
+    });
+
+    this.dispatchEvent(itemActionEvent);
+  }
+
+  @HostListener("keydown")
+  // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
+  private _handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this._handleClick();
+    }
+  };
 
   render() {
     const { title, date } = this;

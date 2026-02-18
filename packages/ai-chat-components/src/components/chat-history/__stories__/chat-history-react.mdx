@@ -132,6 +132,292 @@ function ChatHistory() {
 </HistoryShell>
 ```
 
+## Custom Events
+
+The chat history React components emit several custom events that you can listen for to handle user interactions. Below are tables documenting all available events for each component:
+
+### `<HistoryPanelItem>` Events
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Event Prop</th>
+      <th>Event Name</th>
+      <th>Description</th>
+      <th>Event Detail Properties</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>onHistoryItemSelected</code></td>
+      <td><code>history-item-selected</code></td>
+      <td>Fired when the history panel item is clicked (but not when clicking on interactive elements like the overflow menu).</td>
+      <td>
+        • <code>itemId</code> (string) - The ID of the history item<br/>
+        • <code>itemTitle</code> (string) - The title of the history item<br/>
+        • <code>element</code> (HTMLElement) - Reference to the element
+      </td>
+    </tr>
+    <tr>
+      <td><code>onHistoryItemAction</code></td>
+      <td><code>history-item-action</code></td>
+      <td>Fired when a user clicks on an action in the overflow menu.</td>
+      <td>
+        • <code>action</code> (string) - The text of the action clicked<br/>
+        • <code>itemId</code> (string) - The ID of the history item<br/>
+        • <code>itemTitle</code> (string) - The title of the history item<br/>
+        • <code>element</code> (HTMLElement) - Reference to the element
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+**Example:**
+```jsx
+function ChatHistory() {
+  const handleItemSelected = (event) => {
+    const { itemId, itemTitle } = event.detail;
+    console.log(`Selected chat: ${itemTitle} (ID: ${itemId})`);
+    // Load the selected conversation
+    loadConversation(itemId);
+  };
+
+  const handleItemAction = (event) => {
+    const { action, itemId, itemTitle, element } = event.detail;
+
+    switch(action) {
+      case 'Rename':
+        element.rename = true;
+        break;
+      case 'Delete':
+        console.log(`Deleting chat: ${itemTitle}`);
+        deleteChat(itemId);
+        break;
+      case 'Pin':
+        console.log(`Pinning chat: ${itemTitle}`);
+        pinChat(itemId);
+        break;
+    }
+  };
+
+  return (
+    <HistoryPanelItem
+      id="chat-1"
+      title="My conversation"
+      onHistoryItemSelected={handleItemSelected}
+      onHistoryItemAction={handleItemAction}
+    />
+  );
+}
+```
+
+### `<HistorySearchItem>` Events
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Event Prop</th>
+      <th>Event Name</th>
+      <th>Description</th>
+      <th>Event Detail Properties</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>onHistorySearchItemSelected</code></td>
+      <td><code>history-search-item-selected</code></td>
+      <td>Fired when a search result item is clicked.</td>
+      <td>
+        • <code>itemId</code> (string) - The ID of the search item<br/>
+        • <code>itemTitle</code> (string) - The title of the search item<br/>
+        • <code>element</code> (HTMLElement) - Reference to the element
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+**Example:**
+```jsx
+function SearchResults() {
+  const handleSearchItemSelected = (event) => {
+    const { itemId, itemTitle } = event.detail;
+    console.log(`Selected search result: ${itemTitle}`);
+    // Navigate to the selected conversation
+    navigateToConversation(itemId);
+  };
+
+  return (
+    <HistorySearchItem
+      id="search-1"
+      date="Monday, 12:04 PM"
+      onHistorySearchItemSelected={handleSearchItemSelected}
+    >
+      Search result text
+    </HistorySearchItem>
+  );
+}
+```
+
+### `<HistoryHeader>` Events
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Event Prop</th>
+      <th>Event Name</th>
+      <th>Description</th>
+      <th>Event Detail Properties</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>onHistoryHeaderCloseClick</code></td>
+      <td><code>history-header-close-click</code></td>
+      <td>Fired when the close button in the header is clicked.</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+**Example:**
+```jsx
+function ChatHistory() {
+  const [isHistoryVisible, setIsHistoryVisible] = useState(true);
+
+  const handleHeaderClose = () => {
+    console.log('Close button clicked');
+    setIsHistoryVisible(false);
+  };
+
+  return (
+    isHistoryVisible && (
+      <HistoryShell>
+        <HistoryHeader
+          title="Conversations"
+          onHistoryHeaderCloseClick={handleHeaderClose}
+        />
+        {/* ... rest of content */}
+      </HistoryShell>
+    )
+  );
+}
+```
+
+### `<HistoryToolbar>` Events
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Event Prop</th>
+      <th>Event Name</th>
+      <th>Description</th>
+      <th>Event Detail Properties</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>onChatHistoryNewChatClick</code></td>
+      <td><code>chat-history-new-chat-click</code></td>
+      <td>Fired when the new chat button is clicked.</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td><code>onCdsSearchInput</code></td>
+      <td><code>cds-search-input</code></td>
+      <td>Fired when the user types in the search field.</td>
+      <td>
+        • <code>value</code> (string) - The current search input value
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+**Example:**
+```jsx
+function ChatHistory() {
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleNewChat = () => {
+    console.log('New chat button clicked');
+    createNewConversation();
+  };
+
+  const handleSearchInput = (event) => {
+    const searchValue = event.detail.value;
+    setSearchValue(searchValue);
+    // Filter and display search results
+    const results = filterChatHistory(searchValue);
+    updateSearchResults(results);
+  };
+
+  return (
+    <HistoryShell>
+      <HistoryHeader title="Conversations" />
+      <HistoryToolbar
+        onChatHistoryNewChatClick={handleNewChat}
+        onCdsSearchInput={handleSearchInput}
+      />
+      {/* ... rest of content */}
+    </HistoryShell>
+  );
+}
+```
+
+### `<HistoryPanelItemInput>` Events
+
+<table style={{width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Event Prop</th>
+      <th>Event Name</th>
+      <th>Description</th>
+      <th>Event Detail Properties</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>onInputSave</code></td>
+      <td><code>cds-aichat-history-panel-item-input-save</code></td>
+      <td>Fired when the user saves a renamed history item.</td>
+      <td>
+        • <code>newTitle</code> (string) - The new title entered<br/>
+        • <code>itemId</code> (string) - The ID of the item being renamed
+      </td>
+    </tr>
+    <tr>
+      <td><code>onInputCancel</code></td>
+      <td><code>cds-aichat-history-panel-item-input-cancel</code></td>
+      <td>Fired when the user cancels renaming a history item.</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+**Example:**
+```jsx
+function ChatHistory() {
+  const handleInputSave = (event) => {
+    const { newTitle, itemId } = event.detail;
+    console.log(`Item ${itemId} renamed to: ${newTitle}`);
+    // Update the item title in your data store
+    updateChatTitle(itemId, newTitle);
+  };
+
+  const handleInputCancel = () => {
+    console.log('Rename cancelled');
+  };
+
+  return (
+    <HistoryPanelItemInput
+      value="Current title"
+      itemId="chat-1"
+      onInputSave={handleInputSave}
+      onInputCancel={handleInputCancel}
+    />
+  );
+}
+```
+
 ## Feedback
 
 Open an issue at https://github.com/carbon-design-system/carbon-ai-chat/issues to provide feedback or request changes.
