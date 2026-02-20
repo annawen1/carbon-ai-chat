@@ -51,6 +51,10 @@ button.cds-aichat--carousel-container__navigation-button > svg {
   flex: 1;
 }
 
+.cds-aichat--carousel-container__slide--wide.swiper-slide {
+  max-inline-size: calc(100% - 72px);
+}
+
 .cds-aichat--carousel-container__controls--standard,
 .cds-aichat--carousel-container__controls--wide {
   padding-block-start: layout.$spacing-03;
