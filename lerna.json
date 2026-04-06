@@ -12,10 +12,14 @@
   "command": {
     "version": {
       "message": "chore(release): publish [skip ci]",
-      "ignore": ["examples/**"]
+      "ignoreChanges": [
+        "examples/**"
+      ]
     },
     "publish": {
-      "ignore": ["examples/**"]
+      "ignoreChanges": [
+        "examples/**"
+      ]
     }
   },
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
