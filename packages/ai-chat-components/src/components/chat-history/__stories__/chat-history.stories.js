@@ -58,7 +58,7 @@ class ChatHistoryDemo extends LitElement {
     selectedId: { type: String },
     showCloseAction: { type: Boolean, attribute: "show-close-action" },
     showDeletePanel: { type: Boolean },
-    itemToDelete: { type: String },
+    itemToDelete: { type: Object },
     pinnedItems: { type: Array },
     regularItems: { type: Array },
   };
@@ -209,7 +209,7 @@ class ChatHistoryDemo extends LitElement {
 
     switch (action) {
       case "Delete":
-        this.itemToDelete = event.detail.itemId;
+        this.itemToDelete = event.detail.element;
         this.showDeletePanel = true;
         break;
       case "Rename":
@@ -236,15 +236,15 @@ class ChatHistoryDemo extends LitElement {
 
   _handleDeleteConfirm = () => {
     if (this.itemToDelete) {
+      const itemId = this.itemToDelete.id;
+
       // Remove from pinned items
-      this.pinnedItems = this.pinnedItems.filter(
-        (item) => item.id !== this.itemToDelete,
-      );
+      this.pinnedItems = this.pinnedItems.filter((item) => item.id !== itemId);
 
       // Remove from regular items
       this.regularItems = this.regularItems.map((section) => ({
         ...section,
-        chats: section.chats.filter((chat) => chat.id !== this.itemToDelete),
+        chats: section.chats.filter((chat) => chat.id !== itemId),
       }));
     }
 
@@ -424,7 +424,11 @@ class ChatHistoryDemo extends LitElement {
         </cds-aichat-history-content>
         ${this.showDeletePanel
           ? html`
-              <cds-aichat-history-delete-panel></cds-aichat-history-delete-panel>
+              <cds-aichat-history-delete-panel
+                .triggeringElement=${this.itemToDelete}
+                @history-delete-cancel=${this._handleDeleteCancel}
+                @history-delete-confirm=${this._handleDeleteConfirm}
+              ></cds-aichat-history-delete-panel>
             `
           : ""}
       </cds-aichat-history-shell>

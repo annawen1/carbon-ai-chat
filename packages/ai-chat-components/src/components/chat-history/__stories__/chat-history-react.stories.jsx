@@ -218,7 +218,7 @@ export const Default = {
 
         switch (action) {
           case "Delete":
-            setItemToDelete(event.detail.itemId);
+            setItemToDelete(event.detail.element);
             setShowDeletePanel(true);
             break;
           case "Rename":
@@ -246,16 +246,16 @@ export const Default = {
 
     const handleDeleteConfirm = useCallback(() => {
       if (itemToDelete) {
+        const itemId = itemToDelete.id;
+
         // Remove from pinned items
-        setPinnedItems((prev) =>
-          prev.filter((item) => item.id !== itemToDelete),
-        );
+        setPinnedItems((prev) => prev.filter((item) => item.id !== itemId));
 
         // Remove from regular items
         setRegularItems((prev) =>
           prev.map((section) => ({
             ...section,
-            chats: section.chats.filter((chat) => chat.id !== itemToDelete),
+            chats: section.chats.filter((chat) => chat.id !== itemId),
           })),
         );
       }
@@ -421,6 +421,7 @@ export const Default = {
         </HistoryContent>
         {showDeletePanel && (
           <HistoryDeletePanel
+            triggeringElement={itemToDelete}
             onCancel={handleDeleteCancel}
             onConfirm={handleDeleteConfirm}
           >

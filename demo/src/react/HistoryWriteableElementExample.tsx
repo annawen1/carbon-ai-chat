@@ -90,8 +90,7 @@ function HistoryWriteableElementExample({
     findSelectedItemId(pinnedHistoryItems, historyItems),
   );
   const [showDeletePanel, setShowDeletePanel] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [itemToDeleteElement, setItemToDeleteElement] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState<HTMLElement | null>(null);
   const [pinnedItems, setPinnedItems] = useState<resultItem[]>(
     pinnedHistoryItems.map((item) => ({ ...item, rename: false })),
   );
@@ -221,27 +220,27 @@ function HistoryWriteableElementExample({
   const handleDeleteCancel = useCallback(() => {
     setShowDeletePanel(false);
     setItemToDelete(null);
-    setItemToDeleteElement(null);
   }, []);
 
   // Handle delete panel confirm
   const handleDeleteConfirm = useCallback(() => {
     if (itemToDelete) {
+      const itemId = itemToDelete.id;
+
       // Remove from pinned items
-      setPinnedItems((prev) => prev.filter((item) => item.id !== itemToDelete));
+      setPinnedItems((prev) => prev.filter((item) => item.id !== itemId));
 
       // Remove from regular items
       setRegularItems((prev) =>
         prev.map((section) => ({
           ...section,
-          chats: section.chats.filter((chat) => chat.id !== itemToDelete),
+          chats: section.chats.filter((chat) => chat.id !== itemId),
         })),
       );
     }
 
     setShowDeletePanel(false);
     setItemToDelete(null);
-    setItemToDeleteElement(null);
   }, [itemToDelete]);
 
   // Handle rename chat save
@@ -282,8 +281,7 @@ function HistoryWriteableElementExample({
 
       switch (action) {
         case "Delete":
-          setItemToDelete(event.detail.itemId);
-          setItemToDeleteElement(event.detail.element);
+          setItemToDelete(event.detail.element);
           setShowDeletePanel(true);
           break;
         case "Rename":
@@ -449,7 +447,7 @@ function HistoryWriteableElementExample({
       </HistoryContent>
       {showDeletePanel && (
         <HistoryDeletePanel
-          triggeringElement={itemToDeleteElement}
+          triggeringElement={itemToDelete}
           onCancel={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
         >
