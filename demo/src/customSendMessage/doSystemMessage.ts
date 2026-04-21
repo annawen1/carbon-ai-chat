@@ -33,6 +33,7 @@ function doSystemMessage(instance: ChatInstance, inline?: boolean) {
           {
             response_type: MessageResponseTypes.SYSTEM,
             title: "Monday, June 14th 2025",
+            divider: true,
           },
         ],
       },

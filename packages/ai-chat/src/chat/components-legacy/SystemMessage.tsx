@@ -44,12 +44,21 @@ function SystemMessage({ message, standalone = true }: SystemMessageProps) {
   // If multiple system messages, join them with a separator
   const title = systemItems.map((item) => item.title).join(" • ");
 
+  // Check if any system item has divider: true
+  const hasDivider = systemItems.some((item) => item.divider === true);
+
   const className = standalone
     ? "cds-aichat--system-message-standalone"
     : "cds-aichat--system-message-inline";
 
+  const dividerClassName = hasDivider ? `${className}--with-divider` : "";
+
   return (
-    <div className={className} role="status" aria-live="polite">
+    <div
+      className={`${className} ${dividerClassName}`}
+      role="status"
+      aria-live="polite"
+    >
       <div className={`${className}-text`}>{title}</div>
     </div>
   );

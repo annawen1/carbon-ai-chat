@@ -35,6 +35,52 @@
     font-style: italic;
     text-align: center;
   }
+
+  // Inline system message with divider
+  .cds-aichat--system-message-inline--with-divider {
+    @include type.type-style("heading-compact-01");
+
+    display: flex;
+    align-items: center;
+    font-style: normal;
+
+    &::before,
+    &::after {
+      flex: 1;
+      border-block-end: 1px solid theme.$border-subtle;
+      content: "";
+    }
+
+    &::before {
+      margin-inline-end: layout.$spacing-05;
+    }
+
+    &::after {
+      margin-inline-start: layout.$spacing-05;
+    }
+  }
 }
 
-// Made with Bob
+// Standalone system message with divider
+.cds-aichat--system-message-standalone--with-divider {
+  &::before,
+  &::after {
+    flex: 1;
+    border-block-end: 1px solid theme.$border-subtle;
+    content: "";
+  }
+
+  &::before {
+    margin-inline-end: layout.$spacing-05;
+  }
+
+  &::after {
+    margin-inline-start: layout.$spacing-05;
+  }
+
+  .cds-aichat--system-message-standalone-text {
+    @include type.type-style("heading-compact-01");
+
+    font-style: normal;
+  }
+}

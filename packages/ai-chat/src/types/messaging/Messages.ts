@@ -934,7 +934,8 @@ type GenericItem<TUserDefinedType = Record<string, unknown>> =
   | ButtonItem<TUserDefinedType>
   | GridItem<TUserDefinedType>
   | ConversationalSearchItem<TUserDefinedType>
-  | PreviewCardItem<TUserDefinedType>;
+  | PreviewCardItem<TUserDefinedType>
+  | SystemMessageItem<TUserDefinedType>;
 
 /**
  * A user defined item returned in a message response from an assistant.
@@ -1085,6 +1086,12 @@ interface SystemMessageItem<
    * The title text to display in the system message.
    */
   title: string;
+
+  /**
+   * When true, displays a visual divider/separator with spacing around the message.
+   * @default false
+   */
+  divider?: boolean;
 }
 
 /**

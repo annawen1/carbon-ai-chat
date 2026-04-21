@@ -90,7 +90,8 @@ const RESPONSE_MAP: Record<
   "option list": (instance) => doOption(instance),
   "ordered list": (instance) => doOrderedList(instance),
   "system message (inline)": (instance) => doSystemMessage(instance, true),
-  "system message (stand alone)": (instance) => doSystemMessage(instance),
+  "system message (stand alone with divider)": (instance) =>
+    doSystemMessage(instance),
   table: (instance) => doTable(instance),
   "table (stream)": (instance, requestOptions) =>
     doTableStreaming(instance, requestOptions),
