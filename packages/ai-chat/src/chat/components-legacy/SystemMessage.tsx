@@ -54,12 +54,12 @@ function SystemMessage({ message, standalone = true }: SystemMessageProps) {
     ? "cds-aichat--system-message-standalone"
     : "cds-aichat--system-message-inline";
 
-  // `date` / `agentConnected` apply only to standalone system lines; inline always uses default styling
+  // `date` / `agent` apply only to standalone system lines; inline always uses default styling
   const variantClassName = standalone
     ? variant === "date"
       ? `${className}--date`
-      : variant === "agentConnected"
-        ? `${className}--agent-connected`
+      : variant === "agent"
+        ? `${className}--agent`
         : ""
     : "";
 

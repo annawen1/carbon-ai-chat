@@ -35,14 +35,14 @@ function doSystemMessage(
       },
     });
   }
-  if (variant === "agentConnected") {
+  if (variant === "agent") {
     instance.messaging.addMessage({
       output: {
         generic: [
           {
             response_type: MessageResponseTypes.SYSTEM,
             title: "Agent joined the chat",
-            variant: "agentConnected",
+            variant: "agent",
           },
         ],
       },

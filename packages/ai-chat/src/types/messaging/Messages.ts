@@ -1070,7 +1070,7 @@ interface TextItem<
  *
  * @category Messaging
  */
-export type SystemMessageVariant = "default" | "date" | "agentConnected";
+export type SystemMessageVariant = "default" | "date" | "agent";
 
 /**
  * A system message item that can be returned in a message response. System messages are used for

@@ -94,8 +94,8 @@ const RESPONSE_MAP: Record<
     doSystemMessage(instance, false, "default"),
   "system message (stand alone, date variant)": (instance) =>
     doSystemMessage(instance, false, "date"),
-  "system message (stand alone, agent connected variant)": (instance) =>
-    doSystemMessage(instance, false, "agentConnected"),
+  "system message (stand alone, agent variant)": (instance) =>
+    doSystemMessage(instance, false, "agent"),
   table: (instance) => doTable(instance),
   "table (stream)": (instance, requestOptions) =>
     doTableStreaming(instance, requestOptions),

@@ -61,8 +61,8 @@
   }
 }
 
-// Standalone: agent-joined (rule above, smaller text)
-.cds-aichat--system-message-standalone--agent-connected {
+// Standalone: agent (rule above, smaller text)
+.cds-aichat--system-message-standalone--agent {
   border-block-start: 1px solid theme.$border-subtle;
   margin-block-start: layout.$spacing-05;
   padding-block-start: layout.$spacing-05;
