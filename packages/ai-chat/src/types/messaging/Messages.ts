@@ -1066,6 +1066,13 @@ interface TextItem<
 }
 
 /**
+ * Visual layout for a {@link SystemMessageItem}.
+ *
+ * @category Messaging
+ */
+export type SystemMessageVariant = "default" | "date" | "agentConnected";
+
+/**
  * A system message item that can be returned in a message response. System messages are used for
  * status updates, progress indicators, or informational notices.
  *
@@ -1088,10 +1095,13 @@ interface SystemMessageItem<
   title: string;
 
   /**
-   * When true, displays a visual divider/separator with spacing around the message.
-   * @default false
+   * How the system line is presented when the message renders as a **standalone** system line
+   * (response contains only system items): default body text, date separator with rules, or
+   * agent-joined with a rule above and smaller text. When system items render **inline** inside a
+   * bubble, `variant` is ignored and the default inline style is used.
+   * @default 'default'
    */
-  divider?: boolean;
+  variant?: SystemMessageVariant;
 }
 
 /**

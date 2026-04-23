@@ -7,18 +7,72 @@
  *  @license
  */
 
-import { ChatInstance, MessageResponseTypes } from "@carbon/ai-chat";
+import {
+  ChatInstance,
+  MessageResponseTypes,
+  SystemMessageVariant,
+} from "@carbon/ai-chat";
 import { MARKDOWN } from "./constants";
 
-function doSystemMessage(instance: ChatInstance, inline?: boolean) {
+function doSystemMessage(
+  instance: ChatInstance,
+  inline?: boolean,
+  variant?: SystemMessageVariant,
+) {
   if (inline) {
     instance.messaging.addMessage({
       output: {
         generic: [
           {
             response_type: MessageResponseTypes.SYSTEM,
-            title: "Monday, June 14th 2025",
+            title: "This is a system message",
           },
+          {
+            response_type: MessageResponseTypes.TEXT,
+            text: MARKDOWN,
+          },
+        ],
+      },
+    });
+  }
+  if (variant === "agentConnected") {
+    instance.messaging.addMessage({
+      output: {
+        generic: [
+          {
+            response_type: MessageResponseTypes.SYSTEM,
+            title: "Agent joined the chat",
+            variant: "agentConnected",
+          },
+        ],
+      },
+    });
+    instance.messaging.addMessage({
+      output: {
+        generic: [
+          {
+            response_type: MessageResponseTypes.TEXT,
+            text: MARKDOWN,
+          },
+        ],
+      },
+    });
+  }
+  if (variant === "date") {
+    instance.messaging.addMessage({
+      output: {
+        generic: [
+          {
+            response_type: MessageResponseTypes.SYSTEM,
+            title: "Monday, June 14th 2025",
+            variant: "date",
+          },
+        ],
+      },
+    });
+    instance.messaging.addMessage({
+      output: {
+        generic: [
           {
             response_type: MessageResponseTypes.TEXT,
             text: MARKDOWN,
@@ -32,8 +86,8 @@ function doSystemMessage(instance: ChatInstance, inline?: boolean) {
         generic: [
           {
             response_type: MessageResponseTypes.SYSTEM,
-            title: "Monday, June 14th 2025",
-            divider: true,
+            title: "This is a system message",
+            variant: "default",
           },
         ],
       },

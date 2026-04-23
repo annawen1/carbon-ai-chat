@@ -12,6 +12,7 @@ import {
   Message,
   MessageResponseTypes,
   SystemMessageItem,
+  SystemMessageVariant,
 } from "../../types/messaging/Messages";
 import { isResponse } from "../utils/messageUtils";
 
@@ -44,18 +45,27 @@ function SystemMessage({ message, standalone = true }: SystemMessageProps) {
   // If multiple system messages, join them with a separator
   const title = systemItems.map((item) => item.title).join(" • ");
 
-  // Check if any system item has divider: true
-  const hasDivider = systemItems.some((item) => item.divider === true);
+  const explicitVariant: SystemMessageVariant | undefined = systemItems.find(
+    (item) => item.variant !== undefined && item.variant !== "default",
+  )?.variant;
+  const variant: SystemMessageVariant = explicitVariant ?? "default";
 
   const className = standalone
     ? "cds-aichat--system-message-standalone"
     : "cds-aichat--system-message-inline";
 
-  const dividerClassName = hasDivider ? `${className}--with-divider` : "";
+  // `date` / `agentConnected` apply only to standalone system lines; inline always uses default styling
+  const variantClassName = standalone
+    ? variant === "date"
+      ? `${className}--date`
+      : variant === "agentConnected"
+        ? `${className}--agent-connected`
+        : ""
+    : "";
 
   return (
     <div
-      className={`${className} ${dividerClassName}`}
+      className={`${className} ${variantClassName}`}
       role="status"
       aria-live="polite"
     >
