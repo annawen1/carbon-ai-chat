@@ -55,7 +55,7 @@
   }
 
   .cds-aichat--system-message-standalone-text {
-    @include type.type-style("heading-compact-01");
+    @include type.type-style("helper-text-01");
 
     font-style: normal;
   }
@@ -64,11 +64,11 @@
 // Standalone: agent (rule above, smaller text)
 .cds-aichat--system-message-standalone--agent {
   border-block-start: 1px solid theme.$border-subtle;
-  margin-block-start: layout.$spacing-05;
+  margin-block-start: layout.$spacing-07;
   padding-block-start: layout.$spacing-05;
 
   .cds-aichat--system-message-standalone-text {
-    @include type.type-style("label-01");
+    @include type.type-style("helper-text-01");
 
     color: theme.$text-secondary;
     font-style: normal;
