@@ -17,10 +17,9 @@
   margin: layout.$spacing-07 layout.$spacing-05 0 layout.$spacing-05;
 
   &-text {
-    @include type.type-style("body-01");
+    @include type.type-style("helper-text-01");
 
     color: theme.$text-secondary;
-    font-style: italic;
     text-align: center;
   }
 }
@@ -29,10 +28,9 @@
 .cds-aichat--received,
 .cds-aichat--sent {
   .cds-aichat--system-message-inline {
-    @include type.type-style("body-01");
+    @include type.type-style("helper-text-01");
 
     color: theme.$text-secondary;
-    font-style: italic;
     text-align: center;
   }
 }
