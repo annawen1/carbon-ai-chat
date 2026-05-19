@@ -1,9 +1,12 @@
 /*
- *  Copyright IBM Corp. 2025
+ *  Copyright IBM Corp. 2025, 2026
  *
  *  This source code is licensed under the Apache-2.0 license found in the
  *  LICENSE file in the root directory of this source tree.
  */
+
+import type { Page, TestInfo } from "@playwright/test";
+import { takeSnapshot } from "@chromatic-com/playwright";
 
 /**
  * Polyfill DOM types that Carbon web components might reference in source maps.
@@ -17,6 +20,23 @@ if (typeof globalThis.Node === "undefined") {
   // @ts-ignore - adding minimal polyfill for DOM Node type
   globalThis.Node = class Node {};
 }
+
+/**
+ * Capture a named Chromatic snapshot at a stable point in the test.
+ * No-ops when CHROMATIC_PROJECT_TOKEN is unset (local functional runs).
+ * Chromatic injects its browser bundle at snapshot time via takeSnapshot().
+ */
+export const captureChromaticSnapshot = async (
+  page: Page,
+  testInfo: TestInfo,
+  name: string,
+) => {
+  if (!process.env.CHROMATIC_PROJECT_TOKEN) {
+    return;
+  }
+
+  await takeSnapshot(page, name, testInfo);
+};
 
 /**
  * Global setup for Playwright tests.

@@ -6,7 +6,7 @@
  */
 
 import { PageObjectId, ViewType } from "@carbon/ai-chat/server";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import {
   setupAccessibilityChecker,
   checkAccessibility,
@@ -16,6 +16,7 @@ import {
   installTestCsp,
   openChatViaLauncher,
 } from "./utils";
+import { captureChromaticSnapshot } from "./setup";
 
 // Setup accessibility checker before all tests
 test.beforeAll(() => {
@@ -63,7 +64,7 @@ test.afterEach(async ({ page }) => {
   await destroyChatSession(page);
 });
 
-test("smoke React", async ({ page }) => {
+test("smoke React", async ({ page }, testInfo) => {
   test.slow();
   // Navigate to the app with float layout settings
   await page.goto("/?settings=%7B%22layout%22%3A%22float%22%7D");
@@ -92,10 +93,11 @@ test("smoke React", async ({ page }) => {
 
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "React Chat - Main Panel");
+  await captureChromaticSnapshot(page, testInfo, "smoke-react-main-panel");
   await close.click();
 });
 
-test("smoke web component", async ({ page }) => {
+test("smoke web component", async ({ page }, testInfo) => {
   // Navigate to the app with web component and float layout settings
   await page.goto(
     "/?settings=%7B%22framework%22%3A%22web-component%22%2C%22layout%22%3A%22float%22%7D",
@@ -128,11 +130,16 @@ test("smoke web component", async ({ page }) => {
 
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "Web Component Chat - Main Panel");
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "smoke-web-component-main-panel",
+  );
 
   await close.click();
 });
 
-test("smoke react custom element", async ({ page }) => {
+test("smoke react custom element", async ({ page }, testInfo) => {
   test.slow();
   // Navigate to the app with fullscreen layout to render the custom element
   await page.goto("/");
@@ -158,9 +165,14 @@ test("smoke react custom element", async ({ page }) => {
   // input field. The bug only reproduces on React 17/18 hosts, but we assert
   // here too to catch any future regression on React 19.
   await expect(input).toHaveText("");
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "smoke-react-custom-element-main-panel",
+  );
 });
 
-test("smoke web component custom element", async ({ page }) => {
+test("smoke web component custom element", async ({ page }, testInfo) => {
   // Navigate to the web component demo using the fullscreen layout (custom element)
   await page.goto(
     `/?settings=%7B"framework"%3A"web-component"%2C"layout"%3A"fullscreen"%2C"writeableElements"%3A"false"%2C"direction"%3A"default"%7D&config=%7B"aiEnabled"%3Atrue%2C"messaging"%3A%7B%7D%2C"header"%3A%7B"isOn"%3Afalse%7D%2C"layout"%3A%7B"showFrame"%3Afalse%7D%2C"launcher"%3A%7B"isOn"%3Atrue%7D%2C"openChatByDefault"%3Atrue%7D`,
@@ -189,4 +201,9 @@ test("smoke web component custom element", async ({ page }) => {
   // input field. The bug only reproduces on React 17/18 hosts, but we assert
   // here too to catch any future regression on React 19.
   await expect(input).toHaveText("");
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "smoke-web-component-custom-element-main-panel",
+  );
 });

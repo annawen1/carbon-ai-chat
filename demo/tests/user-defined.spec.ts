@@ -1,17 +1,18 @@
 /*
- *  Copyright IBM Corp. 2025
+ *  Copyright IBM Corp. 2025, 2026
  *
  *  This source code is licensed under the Apache-2.0 license found in the
  *  LICENSE file in the root directory of this source tree.
  */
 
 import { PageObjectId } from "@carbon/ai-chat/server";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import {
   destroyChatSession,
   openChatViaLauncher,
   sendChatMessage,
 } from "./utils";
+import { captureChromaticSnapshot } from "./setup";
 
 // Import types for window.chatInstance without emitting runtime code
 import type {} from "../types/window";
@@ -30,7 +31,7 @@ test.afterEach(async ({ page }) => {
 test.describe("user_defined responses - callback path (web component)", () => {
   test("renders a user_defined response via renderUserDefinedResponse callback", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.slow();
 
     // Navigate to the web component demo with float layout
@@ -58,11 +59,16 @@ test.describe("user_defined responses - callback path (web component)", () => {
     await expect(
       page.locator("user-defined-response-example").first(),
     ).toBeVisible({ timeout: 15000 });
+    await captureChromaticSnapshot(
+      page,
+      testInfo,
+      "user-defined-web-component",
+    );
   });
 
   test("renders a streaming user_defined response via callback", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.slow();
 
     await page.goto(
@@ -88,11 +94,16 @@ test.describe("user_defined responses - callback path (web component)", () => {
     await expect(
       page.locator("user-defined-response-example").first(),
     ).toBeVisible({ timeout: 30000 });
+    await captureChromaticSnapshot(
+      page,
+      testInfo,
+      "user-defined-web-component-streaming",
+    );
   });
 
   test("renders user_defined response in fullscreen custom element layout", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.slow();
 
     await page.goto(
@@ -114,13 +125,14 @@ test.describe("user_defined responses - callback path (web component)", () => {
     await expect(
       page.locator("user-defined-response-example").first(),
     ).toBeVisible({ timeout: 15000 });
+    await captureChromaticSnapshot(page, testInfo, "user-defined-fullscreen");
   });
 });
 
 test.describe("user_defined responses - legacy event path (React)", () => {
   test("renders a user_defined response via React renderUserDefinedResponse", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.slow();
 
     // Navigate to the React demo (default framework) with float layout
@@ -145,11 +157,12 @@ test.describe("user_defined responses - legacy event path (React)", () => {
     await expect(page.locator(".external").first()).toBeVisible({
       timeout: 15000,
     });
+    await captureChromaticSnapshot(page, testInfo, "user-defined-react");
   });
 
   test("renders a streaming user_defined response via React", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.slow();
 
     await page.goto("/?settings=%7B%22layout%22%3A%22float%22%7D");
@@ -170,5 +183,10 @@ test.describe("user_defined responses - legacy event path (React)", () => {
     await expect(page.locator(".external").first()).toBeVisible({
       timeout: 30000,
     });
+    await captureChromaticSnapshot(
+      page,
+      testInfo,
+      "user-defined-react-streaming",
+    );
   });
 });

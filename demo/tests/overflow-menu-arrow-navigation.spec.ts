@@ -5,7 +5,7 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import { PageObjectId } from "@carbon/ai-chat/server";
 import {
   prepareDemoPage,
@@ -15,6 +15,7 @@ import {
   waitForChatReady,
   waitForSetChatConfigApplied,
 } from "./utils";
+import { captureChromaticSnapshot } from "./setup";
 
 // Import types for window.setChatConfig without emitting runtime code
 import type {} from "../types/window";
@@ -92,7 +93,7 @@ async function focusFirstMenuItem(page: any) {
   await firstMenuItem.focus();
 }
 
-test("arrow key navigation in overflow menu", async ({ page }) => {
+test("arrow key navigation in overflow menu", async ({ page }, testInfo) => {
   // Configure chat with menu options enabled
   await page.evaluate(async () => {
     if (!window.setChatConfig) {
@@ -173,4 +174,9 @@ test("arrow key navigation in overflow menu", async ({ page }) => {
   // Verify second item is now focused
   focusedText = await getFocusedMenuItemText(page);
   expect(focusedText).toBe("Documentation");
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "overflow-menu-focus-documentation",
+  );
 });

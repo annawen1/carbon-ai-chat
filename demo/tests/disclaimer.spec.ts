@@ -6,7 +6,7 @@
  */
 
 import { PageObjectId } from "@carbon/ai-chat/server";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import {
   destroyChatSession,
   expectNoCspViolations,
@@ -17,6 +17,7 @@ import {
   setupAccessibilityChecker,
   checkAccessibility,
 } from "./utils";
+import { captureChromaticSnapshot } from "./setup";
 
 // Import types for window.setChatConfig without emitting runtime code
 import type {} from "../types/window";
@@ -40,7 +41,9 @@ test.afterEach(async ({ page }) => {
   await destroyChatSession(page);
 });
 
-test("disclaimer disappears when Accept is clicked", async ({ page }) => {
+test("disclaimer disappears when Accept is clicked", async ({
+  page,
+}, testInfo) => {
   // Set config with disclaimer enabled
   await page.evaluate(async () => {
     if (window.setChatConfig) {
@@ -85,12 +88,17 @@ test("disclaimer disappears when Accept is clicked", async ({ page }) => {
   // Run accessibility check on the chat widget
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "Disclaimer - After Accept");
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "disclaimer-after-accept-main-panel",
+  );
 });
 
 // Confirm that updating setChatConfig disclaimer content clears the accepted flag and reopens the panel.
 test("disclaimer accepted state is cleared on content change", async ({
   page,
-}) => {
+}, testInfo) => {
   // Phase 1: Set initial disclaimer
   await page.evaluate(async () => {
     if (window.setChatConfig) {
@@ -158,9 +166,14 @@ test("disclaimer accepted state is cleared on content change", async ({
   // Run accessibility check on the chat widget with new disclaimer
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "Disclaimer - New Content");
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "disclaimer-content-change-reopens-panel",
+  );
 });
 
-test("disclaimer enable and disable", async ({ page }) => {
+test("disclaimer enable and disable", async ({ page }, testInfo) => {
   // Phase 1: Start with disclaimer enabled
   await page.evaluate(async () => {
     if (window.setChatConfig) {
@@ -227,4 +240,5 @@ test("disclaimer enable and disable", async ({ page }) => {
   // Run accessibility check on the chat widget with re-enabled disclaimer
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "Disclaimer - Re-enabled");
+  await captureChromaticSnapshot(page, testInfo, "disclaimer-reenabled");
 });

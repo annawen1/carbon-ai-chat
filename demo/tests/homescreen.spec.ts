@@ -6,7 +6,7 @@
  */
 
 import { PageObjectId } from "@carbon/ai-chat/server";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import {
   destroyChatSession,
   expectNoCspViolations,
@@ -17,6 +17,7 @@ import {
   setupAccessibilityChecker,
   checkAccessibility,
 } from "./utils";
+import { captureChromaticSnapshot } from "./setup";
 
 // Import types for window.setChatConfig without emitting runtime code
 import type {} from "../types/window";
@@ -40,7 +41,7 @@ test.afterEach(async ({ page }) => {
   await destroyChatSession(page);
 });
 
-test("homescreen from disabled to enabled", async ({ page }) => {
+test("homescreen from disabled to enabled", async ({ page }, testInfo) => {
   // Phase 1: Enable homescreen
   await page.evaluate(async () => {
     if (window.setChatConfig) {
@@ -70,9 +71,10 @@ test("homescreen from disabled to enabled", async ({ page }) => {
   // Run accessibility check on the chat widget
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "Homescreen - Enabled State");
+  await captureChromaticSnapshot(page, testInfo, "homescreen-enabled");
 });
 
-test("homescreen greeting updates", async ({ page }) => {
+test("homescreen greeting updates", async ({ page }, testInfo) => {
   // Phase 1: Set initial homescreen with greeting
   await page.evaluate(async () => {
     if (window.setChatConfig) {
@@ -118,4 +120,5 @@ test("homescreen greeting updates", async ({ page }) => {
   // Run accessibility check on the chat widget
   const chatWidget = page.getByTestId(PageObjectId.CHAT_WIDGET);
   await checkAccessibility(chatWidget, "Homescreen - Updated Greeting");
+  await captureChromaticSnapshot(page, testInfo, "homescreen-greeting-updated");
 });

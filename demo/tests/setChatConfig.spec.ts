@@ -1,12 +1,12 @@
 /*
- *  Copyright IBM Corp. 2025
+ *  Copyright IBM Corp. 2025, 2026
  *
  *  This source code is licensed under the Apache-2.0 license found in the
  *  LICENSE file in the root directory of this source tree.
  */
 
 import { PageObjectId } from "@carbon/ai-chat/server";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import { DemoPageObjectId } from "./utils";
 import {
   destroyChatSession,
@@ -14,6 +14,7 @@ import {
   waitForChatReady,
   waitForSetChatConfigApplied,
 } from "./utils";
+import { captureChromaticSnapshot } from "./setup";
 
 // Import types for window.setChatConfig without emitting runtime code
 import type {} from "../types/window";
@@ -24,7 +25,9 @@ test.afterEach(async ({ page }) => {
 });
 
 // Full happy-path regression for setChatConfig mode to ensure notifications and view transitions still behave.
-test("setChatConfig configuration mode functionality", async ({ page }) => {
+test("setChatConfig configuration mode functionality", async ({
+  page,
+}, testInfo) => {
   // Block analytics script to avoid cookie consent issues
   await page.route(/.*ibm-common\.js$/, (route) => route.abort());
 
@@ -152,11 +155,12 @@ test("setChatConfig configuration mode functionality", async ({ page }) => {
     page.getByTestId(DemoPageObjectId.SET_CHAT_CONFIG_NOTIFICATION_ACTIVE),
   ).not.toBeVisible();
   await expect(page.getByTestId(DemoPageObjectId.CONFIG_SIDEBAR)).toBeVisible();
+  await captureChromaticSnapshot(page, testInfo, "set-chat-config-recovered");
 });
 
 test("setChatConfig mode without config prevents chat startup", async ({
   page,
-}) => {
+}, testInfo) => {
   // Block analytics script to avoid cookie consent issues
   await page.route(/.*ibm-common\.js$/, (route) => route.abort());
 
@@ -206,4 +210,9 @@ test("setChatConfig mode without config prevents chat startup", async ({
   await expect(
     page.getByTestId(DemoPageObjectId.SET_CHAT_CONFIG_NOTIFICATION_ACTIVE),
   ).not.toBeVisible();
+  await captureChromaticSnapshot(
+    page,
+    testInfo,
+    "set-chat-config-startup-prevented-then-recovered",
+  );
 });

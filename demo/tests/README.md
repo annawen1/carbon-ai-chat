@@ -39,7 +39,7 @@ await window.setChatConfig({
 ## Playwright Recipe
 
 ```typescript
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@chromatic-com/playwright";
 import { PageObjectId } from "@carbon/ai-chat/server";
 import {
   prepareDemoPage,

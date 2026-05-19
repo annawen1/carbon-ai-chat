@@ -22,18 +22,33 @@ import type {} from "../types/window";
  * connect-src for webpack-dev-server HMR. `frame-ancestors` is omitted —
  * browsers ignore it when delivered via <meta>.
  */
-const TEST_CSP =
-  "default-src 'self'; " +
-  "script-src 'self' https://1.www.s81c.com https://www.youtube.com https://player.vimeo.com https://cdn.embed.ly https://w.soundcloud.com; " +
-  "style-src 'self' https://1.www.s81c.com; " +
-  "img-src 'self' data: blob: https://1.www.s81c.com https://live.staticflickr.com; " +
-  "font-src 'self' https://1.www.s81c.com; " +
-  "connect-src 'self' https://1.www.s81c.com ws: wss:; " +
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://w.soundcloud.com https://cdnapisec.kaltura.com https://web-chat.assistant.test.watson.cloud.ibm.com; " +
-  "media-src https://web-chat.assistant.test.watson.cloud.ibm.com; " +
-  "object-src 'none'; " +
-  "base-uri 'self'; " +
-  "form-action 'self';";
+const TEST_CSP_SCRIPT_SRC =
+  "'self' https://1.www.s81c.com https://www.youtube.com https://player.vimeo.com https://cdn.embed.ly https://w.soundcloud.com";
+const TEST_CSP_STYLE_SRC = "'self' https://1.www.s81c.com";
+
+/**
+ * Returns the CSP injected into demo HTML during tests. When Chromatic is
+ * active, script-src and style-src allow inline injection required by
+ * `@chromatic-com/playwright` snapshot capture (`page.addScriptTag`).
+ */
+export const getTestCsp = () => {
+  const chromaticInline = process.env.CHROMATIC_PROJECT_TOKEN
+    ? " 'unsafe-inline'"
+    : "";
+  return (
+    "default-src 'self'; " +
+    `script-src ${TEST_CSP_SCRIPT_SRC}${chromaticInline}; ` +
+    `style-src ${TEST_CSP_STYLE_SRC}${chromaticInline}; ` +
+    "img-src 'self' data: blob: https://1.www.s81c.com https://live.staticflickr.com; " +
+    "font-src 'self' https://1.www.s81c.com; " +
+    "connect-src 'self' https://1.www.s81c.com ws: wss:; " +
+    "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://w.soundcloud.com https://cdnapisec.kaltura.com https://web-chat.assistant.test.watson.cloud.ibm.com; " +
+    "media-src https://web-chat.assistant.test.watson.cloud.ibm.com; " +
+    "object-src 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self';"
+  );
+};
 
 const cspInstalledPages = new WeakSet<Page>();
 
@@ -84,7 +99,7 @@ export const installTestCsp = async (page: Page) => {
       return route.fulfill({ response });
     }
     const body = await response.text();
-    const cspMeta = `<meta http-equiv="Content-Security-Policy" content="${TEST_CSP}">`;
+    const cspMeta = `<meta http-equiv="Content-Security-Policy" content="${getTestCsp()}">`;
     // Match `<head>` with or without attributes so e.g. `<head data-foo>`
     // doesn't silently no-op the CSP injection.
     const injected = body.replace(
