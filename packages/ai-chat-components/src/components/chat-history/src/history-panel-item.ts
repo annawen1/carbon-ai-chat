@@ -310,6 +310,13 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
   connectedCallback() {
     super.connectedCallback();
 
+    // Add treegrid row role and ARIA attributes
+    this.setAttribute("role", "row");
+    this.setAttribute("aria-level", "2");
+
+    // Set aria-selected based on the selected property
+    this.setAttribute("aria-selected", this.selected ? "true" : "false");
+
     // Inherit show-actions from parent panel if not explicitly set on this item
     const parentPanel = this.closest(`${prefix}-history-panel`);
     if (parentPanel && !this.hasAttribute("show-actions")) {
@@ -340,6 +347,11 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
 
   updated(changedProperties: Map<string, any>) {
     super.updated(changedProperties);
+
+    // Update aria-selected when the selected property changes
+    if (changedProperties.has("selected")) {
+      this.setAttribute("aria-selected", this.selected ? "true" : "false");
+    }
 
     if (this.input) {
       this.input.addEventListener("history-panel-item-input-cancel", () => {
@@ -373,37 +385,44 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
     });
     return html`
       ${!rename
-        ? html` <button class="${classes}">
-            <span part="name" class="cds--side-nav__link-text"> ${name} </span>
-            <slot name="actions">
-              <cds-overflow-menu
-                align="top-right"
-                size="sm"
-                @click=${adjustMenuPosition}
-                @keydown=${handleMenuTriggerKeyDown}
-              >
-                ${iconLoader(OverflowMenuVertical16, {
-                  class: `${prefix}--overflow-menu__icon`,
-                  slot: "icon",
-                })}
-                <span slot="tooltip-content">${overflowMenuLabel}</span>
-                <cds-overflow-menu-body flipped>
-                  ${repeat(
-                    actions,
-                    (action) => action.text,
-                    (action) =>
-                      html`<cds-overflow-menu-item
-                        ?danger=${action.delete}
-                        ?divider=${action.divider}
-                        @click=${handleMenuItemClick}
-                        @keydown=${handleMenuItemKeyDown}
-                        >${action.text}${action.icon}</cds-overflow-menu-item
-                      >`,
-                  )}
-                </cds-overflow-menu-body>
-              </cds-overflow-menu>
-            </slot>
-          </button>`
+        ? html`
+            <!-- Single Gridcell containing both item name and overflow menu -->
+            <div role="gridcell" class="${prefix}--history-panel-item__cell">
+              <button class="${classes}">
+                <span part="name" class="cds--side-nav__link-text">
+                  ${name}
+                </span>
+                <slot name="actions">
+                  <cds-overflow-menu
+                    align="top-right"
+                    size="sm"
+                    @click=${adjustMenuPosition}
+                    @keydown=${handleMenuTriggerKeyDown}
+                  >
+                    ${iconLoader(OverflowMenuVertical16, {
+                      class: `${prefix}--overflow-menu__icon`,
+                      slot: "icon",
+                    })}
+                    <span slot="tooltip-content">${overflowMenuLabel}</span>
+                    <cds-overflow-menu-body flipped>
+                      ${repeat(
+                        actions,
+                        (action) => action.text,
+                        (action) =>
+                          html`<cds-overflow-menu-item
+                            ?danger=${action.delete}
+                            ?divider=${action.divider}
+                            @click=${handleMenuItemClick}
+                            @keydown=${handleMenuItemKeyDown}
+                            >${action.text}${action.icon}</cds-overflow-menu-item
+                          >`,
+                      )}
+                    </cds-overflow-menu-body>
+                  </cds-overflow-menu>
+                </slot>
+              </button>
+            </div>
+          `
         : html`
             <cds-aichat-history-panel-item-input
               value="${name}"
