@@ -171,6 +171,9 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
    */
   private _handleMenuTriggerKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
+      // Prevent the event from bubbling up to parent menu which would toggle it
+      event.preventDefault();
+      event.stopPropagation();
       this._adjustMenuPosition();
     }
   };
@@ -334,6 +337,14 @@ class CDSAIChatHistoryPanelItem extends HostListenerMixin(
         attributeFilter: ["show-actions"],
       });
     }
+
+    // Ensure gridcell has proper tabindex after render
+    this.updateComplete.then(() => {
+      const gridcell = this.shadowRoot?.querySelector('[role="gridcell"]') as HTMLElement;
+      if (gridcell && !gridcell.hasAttribute('tabindex')) {
+        gridcell.setAttribute('tabindex', '-1');
+      }
+    });
   }
 
   disconnectedCallback() {
